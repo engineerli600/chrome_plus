@@ -126,9 +126,7 @@ int HandleDoubleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_one_tab = IsOnOneTab(top_container_view, pt);
   bool is_on_close_button = IsOnCloseButton(top_container_view, pt);
   bool is_only_one_tab = IsOnlyOneTab(top_container_view);
-  bool keep_tab = IsNeedKeep(top_container_view);
-  
-  if (!is_on_one_tab || is_on_close_button || keep_tab ) {
+  if (!is_on_one_tab || is_on_close_button) {
     return 0;
   }
   if (is_only_one_tab) {

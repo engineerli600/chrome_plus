@@ -194,6 +194,31 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return 0;
 }
 
+// HandleLeftClick 函数
+// 处理鼠标左键点击事件，如果当前标签是最后一个标签，且需要保留最后一个标签页，并且鼠标在关闭按钮上，当鼠标左键时，不关闭标签页
+int HandleLeftClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+  if (wParam != WM_LBUTTONUP) {  // 如果不是左键松开事件，则返回 0
+    return 0;
+  }
+
+  POINT pt = pmouse->pt;  // 获取鼠标点击位置
+  HWND hwnd = WindowFromPoint(pt);  // 获取点击位置的窗口句柄
+  NodePtr top_container_view = HandleFindBar(hwnd, pt);  // 获取 top_container_view
+  if (!top_container_view) {
+    return 0;  // 如果未找到 top_container_view，则返回 0
+  }
+
+  bool is_on_close_button = IsOnCloseButton(top_container_view, pt);  // 检查鼠标是否在关闭按钮上
+  bool is_only_one_tab = IsOnlyOneTab(top_container_view);  // 检查是否只有一个标签页
+  bool keep_tab = IsNeedKeep(top_container_view);  // 检查是否需要保留标签页
+
+  if (is_only_one_tab && keep_tab && is_on_close_button) {
+    return 1;  // 返回 1，表示处理了事件且不关闭标签页
+  }
+
+  return 0;  // 返回 0，表示未处理事件
+}
+
 // Open bookmarks in a new tab.
 bool HandleBookmark(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_LBUTTONUP || IsPressed(VK_CONTROL) || IsPressed(VK_SHIFT) ||
@@ -261,6 +286,10 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     }
 
     if (HandleBookmark(wParam, pmouse)) {
+      return 1;
+    }
+    
+    if (HandleLeftClick(wParam, pmouse) != 0) {  // 添加对 HandleLeftClick 函数的调用
       return 1;
     }
   } while (0);

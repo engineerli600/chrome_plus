@@ -208,11 +208,10 @@ int HandleLeftClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 0;  // 如果未找到 top_container_view，则返回 0
   }
 
-  bool is_on_close_button = IsOnCloseButton(top_container_view, pt);  // 检查鼠标是否在关闭按钮上
-  bool is_only_one_tab = IsOnlyOneTab(top_container_view);  // 检查是否只有一个标签页
+  bool is_on_one_tab = IsOnOneTab(top_container_view, pt);
   bool keep_tab = IsNeedKeep(top_container_view);  // 检查是否需要保留标签页
 
-  if (is_only_one_tab && keep_tab && is_on_close_button) {
+  if (is_on_one_tab && keep_tab) {
     ExecuteCommand(IDC_NEW_TAB, hwnd);
     ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);    
     return 1;  // 返回 1，表示处理了事件且不关闭标签页

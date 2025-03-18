@@ -213,6 +213,8 @@ int HandleLeftClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool keep_tab = IsNeedKeep(top_container_view);  // 检查是否需要保留标签页
 
   if (is_only_one_tab && keep_tab && is_on_close_button) {
+    ExecuteCommand(IDC_NEW_TAB, hwnd);
+    ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);    
     return 1;  // 返回 1，表示处理了事件且不关闭标签页
   }
 

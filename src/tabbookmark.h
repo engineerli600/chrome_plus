@@ -157,8 +157,12 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_one_tab) {
     if (keep_tab) {
-      ExecuteCommand(IDC_NEW_TAB, hwnd);
-      ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
+    ExecuteCommand(IDC_NEW_TAB, hwnd);
+    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
+    ExecuteCommand(IDC_CLOSE_TAB, hwnd);
+    
+    // ExecuteCommand(IDC_NEW_TAB, hwnd);
+    // ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
     } else {
       // Attempt new SendKey function which includes a `dwExtraInfo`
       // value (MAGIC_CODE).
@@ -187,7 +191,11 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_one_tab && keep_tab) {
     ExecuteCommand(IDC_NEW_TAB, hwnd);
-    ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
+    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
+    ExecuteCommand(IDC_CLOSE_TAB, hwnd);
+    
+    // ExecuteCommand(IDC_NEW_TAB, hwnd);
+    // ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
     return 1;
   }
 
@@ -216,6 +224,9 @@ int HandleLeftClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     ExecuteCommand(IDC_NEW_TAB, hwnd);
     ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
     ExecuteCommand(IDC_CLOSE_TAB, hwnd);
+    
+    // ExecuteCommand(IDC_NEW_TAB, hwnd);
+    // ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
     return 1;  // 返回 1，表示处理了事件且不关闭标签页
   }
 

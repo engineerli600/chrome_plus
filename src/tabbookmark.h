@@ -269,6 +269,7 @@ bool HandleBookmark(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 }
 
 
+
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode != HC_ACTION) {
     return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
@@ -314,7 +315,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
       return 1;
     }
 
-    }
+
   } while (0);
   return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
 }

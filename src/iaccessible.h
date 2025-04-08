@@ -509,9 +509,13 @@ bool IsOnCloseButton(NodePtr top, POINT pt) {
       top,
       [&pt, &flag](NodePtr child) {
         if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
-          GetAccessibleSize(child, [&pt, &flag](RECT rect) {
-            if (PtInRect(&rect, pt)) {
-              flag = true;
+          GetAccessibleName(child, [&flag, &pt, child](BSTR bstr) {
+            if (bstr && (wcscmp(bstr, L"新建标签页") == 0 || wcscmp(bstr, L"New tab") == 0)) {
+              GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+                if (PtInRect(&rect, pt)) {
+                  flag = true;
+                }
+              });
             }
           });
         }
@@ -531,7 +535,7 @@ bool IsOnNewTabButtonRightClick(NodePtr top, POINT pt) {
   TraversalAccessible(page_tab_list, [&flag, &pt](NodePtr child) {
     if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
       // 判断该按钮是否为 “新建标签” 所使用的按钮，可根据名称/描述等做进一步区分
-      GetAccessibleName(child, [&flag, &pt](BSTR bstr) {
+      GetAccessibleName(child, [&flag, &pt, child](BSTR bstr) {
         if (bstr && (wcscmp(bstr, L"新建标签页") == 0 || wcscmp(bstr, L"New tab") == 0)) {
           GetAccessibleSize(child, [&flag, &pt](RECT rect) {
             if (PtInRect(&rect, pt)) {

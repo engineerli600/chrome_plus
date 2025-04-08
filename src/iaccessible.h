@@ -536,7 +536,7 @@ bool IsOnNewTabButtonRightClick(NodePtr top, POINT pt) {
     if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
       // 判断该按钮是否为 “新建标签” 所使用的按钮，可根据名称/描述等做进一步区分
       GetAccessibleName(child, [&flag, &pt, child](BSTR bstr) {
-        if (bstr && (wcscmp(bstr, L"新建标签页") == 0 || wcscmp(bstr, L"New tab") == 0)) {
+        if (bstr && (wcscmp(bstr, L"打开新的标签页") == 0 || wcscmp(bstr, L"New tab") == 0)) {
           GetAccessibleSize(child, [&flag, &pt](RECT rect) {
             if (PtInRect(&rect, pt)) {
               flag = true;

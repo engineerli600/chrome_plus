@@ -171,7 +171,7 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     }
     return 1;
   } else if (is_on_new_tab_button) {
-    ExecuteCommand(IDC_NEW_TAB, hwnd);
+    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
     return 1;
   }
   return 0;

@@ -325,7 +325,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     }
 
     // 处理鼠标右键点击新建标签按钮事件
-    if (HandleRightClickNewTabButton(wParam, pmouse)) {
+    if (HandleRightClickNewTabButton(wParam, pmouse) != 0) {
       return 1;
     }
 

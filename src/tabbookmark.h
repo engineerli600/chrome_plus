@@ -264,6 +264,27 @@ bool HandleBookmark(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return false;
 }
 
+// HandleRightClickNewTabButton 函数
+// 处理鼠标右键点击新建标签按钮事件
+int HandleRightClickNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+  if (wParam != WM_RBUTTONUP) {
+    return 0;
+  }
+  POINT pt = pmouse->pt;
+  HWND hwnd = WindowFromPoint(pt);
+  NodePtr top_container_view = GetTopContainerView(hwnd);
+  if (!top_container_view) {
+    return 0;
+  }
+
+  // 如果鼠标在新建标签按钮上，则执行粘贴并转到
+  if (IsOnNewTabButtonRightClick(top_container_view, pt)) {
+    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
+    return 1;
+  }
+  return 0;
+}
+
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode != HC_ACTION) {
     return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
@@ -302,8 +323,18 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (HandleBookmark(wParam, pmouse)) {
       return 1;
     }
-    
+
+    // 处理鼠标右键点击新建标签按钮事件
+    if (HandleRightClickNewTabButton(wParam, pmouse)) {
+      return 1;
+    }
+
+
     if (HandleLeftClick(wParam, pmouse) != 0) {  // 添加对 HandleLeftClick 函数的调用
+      return 1;
+    }
+
+    if (HandleRightClickNewTabButton(wParam, pmouse) != 0) {  // 添加对 HandleRightClickNewTabButton 函数的调用
       return 1;
     }
   } while (0);

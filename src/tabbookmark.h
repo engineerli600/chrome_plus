@@ -198,7 +198,7 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_one_tab && keep_tab) {
     //SendKey(VK_CONTROL, 'H');
     ExecuteCommand(IDC_COPY_URL, hwnd);
-    
+    SendKey(VK_CONTROL, VK_SHIFT, 'B');
     //ExecuteCommand(IDC_NEW_TAB, hwnd);
     //ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
     //ExecuteCommand(IDC_CLOSE_TAB, hwnd);
@@ -258,10 +258,12 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   // 判断是否点击在新建标签按钮上
   if (IsOnNewTabButton(top_container_view, pt)) {
     // 执行粘贴并访问命令
-    //ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
-    ExecuteCommand(IDC_NEW_TAB, hwnd);
-    SendKey(VK_CONTROL, 'V');
-    SendKey(VK_RETURN);
+    ExecuteCommand(40256, hwnd);
+
+    //ExecuteCommand(IDC_NEW_TAB, hwnd);
+    //SendKey(VK_CONTROL, 'V');
+    //SendKey(VK_RETURN);
+
     //SendKey(VK_CONTROL, 'H');
     return 1;
   }

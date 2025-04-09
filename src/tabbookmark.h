@@ -3,8 +3,8 @@
 
 #include "iaccessible.h"
 
-#define IDC_PASTE_AND_GO 40256
-#define IDC_COPY_URL 34060
+
+
 
 
 HHOOK mouse_hook = nullptr;
@@ -195,8 +195,7 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool keep_tab = IsNeedKeep(top_container_view);
 
   if (is_on_one_tab && keep_tab) {
-    //SendKey(VK_CONTROL, 'H');
-    ExecuteCommand(40256, hwnd);
+    SendKey(VK_CONTROL, 'H');
     ExecuteCommand(IDC_COPY_URL, hwnd);
     
     //ExecuteCommand(IDC_NEW_TAB, hwnd);
@@ -258,8 +257,8 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   // 判断是否点击在新建标签按钮上
   if (IsOnNewTabButton(top_container_view, pt)) {
     // 执行粘贴并访问命令
-    //ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
-    SendKey(VK_CONTROL, 'H');
+    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
+    // SendKey(VK_CONTROL, 'H');
     return 1;
   }
 

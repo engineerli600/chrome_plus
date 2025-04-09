@@ -36,6 +36,7 @@
 #define IDC_PASTE_AND_GO 40256
 #define IDC_COPY_URL 34060
 
+
 // String manipulation function.
 std::wstring Format(const wchar_t* format, va_list args) {
   std::vector<wchar_t> buffer;

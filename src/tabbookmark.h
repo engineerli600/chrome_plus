@@ -135,7 +135,8 @@ int HandleDoubleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   }
   if (is_only_one_tab) {
     ExecuteCommand(IDC_NEW_TAB, hwnd);
-    ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
+    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
+    ExecuteCommand(IDC_CLOSE_TAB, hwnd);
   } else {
     ExecuteCommand(IDC_CLOSE_TAB, hwnd);
   }
@@ -258,7 +259,10 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (IsOnNewTabButton(top_container_view, pt)) {
     // 执行粘贴并访问命令
     //ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
-    SendKey(VK_CONTROL, 'H');
+    ExecuteCommand(IDC_NEW_TAB, hwnd);
+    SendKey(VK_CONTROL, 'V');
+    SendKey(VK_RETURN);
+    //SendKey(VK_CONTROL, 'H');
     return 1;
   }
 

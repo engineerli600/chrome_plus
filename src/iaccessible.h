@@ -521,25 +521,40 @@ bool IsOnCloseButton(NodePtr top, POINT pt) {
   return flag;
 }
 
+
 // 检测鼠标是否在新建标签按钮上
 bool IsOnNewTabButton(NodePtr top_container_view, POINT pt) {
   if (!top_container_view) {
     return false;
   }
   
-  // 找到新建标签按钮元素
-  NodePtr new_tab_button = FindTabElement(top_container_view, "NewTabButton");
-  if (!new_tab_button) {
-    return false;
-  }
-  
-  RECT rc;
-  if (!GetNodeRect(new_tab_button, &rc)) {
-    return false;
-  }
-  
-  // 检查点击位置是否在新建标签按钮区域内
-  return PtInRect(&rc, pt);
+  bool flag = false;
+  // 使用 TraversalAccessible 遍历元素，查找新建标签按钮
+  TraversalAccessible(
+      top_container_view,
+      [&pt, &flag](NodePtr child) {
+        // 新建标签按钮通常是一个按钮元素
+        if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
+          // 检查按钮名称，确认是新建标签按钮
+          GetAccessibleName(child, [&flag, &child, &pt](BSTR bstr) {
+            std::wstring_view bstr_view(bstr);
+            // 判断名称是否包含"新建标签页"或"New Tab"字样
+            if (bstr_view.find(L"打开新的标签页") != std::wstring::npos || 
+                bstr_view.find(L"New Tab") != std::wstring::npos) {
+              // 获取按钮区域并检查点击位置
+              GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+                if (PtInRect(&rect, pt)) {
+                  flag = true;
+                }
+              });
+            }
+          });
+        }
+        return flag;  // 如果找到并确认点击位置在按钮上，停止遍历
+      },
+      true);  // 使用 raw_traversal 确保能找到所有元素
+      
+  return flag;
 }
 
 #endif  // IACCESSIBLE_H_

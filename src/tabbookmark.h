@@ -233,6 +233,29 @@ int HandleLeftClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return 0;  // 返回 0，表示未处理事件
 }
 
+// 处理右键点击新建标签按钮的事件
+int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+  if (wParam != WM_RBUTTONUP) {
+    return 0;
+  }
+
+  POINT pt = pmouse->pt;
+  HWND hwnd = WindowFromPoint(pt);
+  NodePtr top_container_view = HandleFindBar(hwnd, pt);
+  if (!top_container_view) {
+    return 0;
+  }
+
+  // 判断是否点击在新建标签按钮上
+  if (IsOnNewTabButton(top_container_view, pt)) {
+    // 执行粘贴并访问命令
+    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
+    return 1;
+  }
+
+  return 0;
+}
+
 // Open bookmarks in a new tab.
 bool HandleBookmark(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_LBUTTONUP || IsPressed(VK_CONTROL) || IsPressed(VK_SHIFT) ||
@@ -300,6 +323,11 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     }
 
     if (HandleBookmark(wParam, pmouse)) {
+      return 1;
+    }
+
+    // 添加对HandleRightClickOnNewTabButton函数的调用
+    if (HandleRightClickOnNewTabButton(wParam, pmouse) != 0) {
       return 1;
     }
     

@@ -521,4 +521,25 @@ bool IsOnCloseButton(NodePtr top, POINT pt) {
   return flag;
 }
 
+// 检测鼠标是否在新建标签按钮上
+bool IsOnNewTabButton(NodePtr top_container_view, POINT pt) {
+  if (!top_container_view) {
+    return false;
+  }
+  
+  // 找到新建标签按钮元素
+  NodePtr new_tab_button = FindTabElement(top_container_view, "NewTabButton");
+  if (!new_tab_button) {
+    return false;
+  }
+  
+  RECT rc;
+  if (!GetNodeRect(new_tab_button, &rc)) {
+    return false;
+  }
+  
+  // 检查点击位置是否在新建标签按钮区域内
+  return PtInRect(&rc, pt);
+}
+
 #endif  // IACCESSIBLE_H_

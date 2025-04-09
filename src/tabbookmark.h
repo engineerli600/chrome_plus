@@ -4,6 +4,7 @@
 #include "iaccessible.h"
 
 #define IDC_PASTE_AND_GO 40256
+#define IDC_COPY_URL 34060
 
 
 HHOOK mouse_hook = nullptr;
@@ -194,8 +195,10 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool keep_tab = IsNeedKeep(top_container_view);
 
   if (is_on_one_tab && keep_tab) {
-    SendKey(VK_CONTROL, `H`);
-    //ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
+    SendKey(VK_CONTROL, H);
+    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
+    ExecuteCommand(IDC_COPY_URL, hwnd);
+    
     //ExecuteCommand(IDC_NEW_TAB, hwnd);
     //ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
     //ExecuteCommand(IDC_CLOSE_TAB, hwnd);

@@ -509,44 +509,15 @@ bool IsOnCloseButton(NodePtr top, POINT pt) {
       top,
       [&pt, &flag](NodePtr child) {
         if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
-          GetAccessibleName(child, [&flag, &pt, child](BSTR bstr) {
-            if (bstr && (wcscmp(bstr, L"新建标签页") == 0 || wcscmp(bstr, L"New tab") == 0)) {
-              GetAccessibleSize(child, [&flag, &pt](RECT rect) {
-                if (PtInRect(&rect, pt)) {
-                  flag = true;
-                }
-              });
+          GetAccessibleSize(child, [&pt, &flag](RECT rect) {
+            if (PtInRect(&rect, pt)) {
+              flag = true;
             }
           });
         }
         return flag;
       },
       true);  // raw_traversal
-  return flag;
-}
-
-// Whether the mouse is on the new tab button with a right click.
-bool IsOnNewTabButtonRightClick(NodePtr top, POINT pt) {
-  NodePtr page_tab_list = FindElementWithRole(top, ROLE_SYSTEM_PAGETABLIST);
-  if (!page_tab_list) {
-    return false;
-  }
-  bool flag = false;
-  TraversalAccessible(page_tab_list, [&flag, &pt](NodePtr child) {
-    if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
-      // 判断该按钮是否为 “新建标签” 所使用的按钮，可根据名称/描述等做进一步区分
-      GetAccessibleName(child, [&flag, &pt, child](BSTR bstr) {
-        if (bstr && (wcscmp(bstr, L"打开新的标签页") == 0 || wcscmp(bstr, L"New tab") == 0)) {
-          GetAccessibleSize(child, [&flag, &pt](RECT rect) {
-            if (PtInRect(&rect, pt)) {
-              flag = true;
-            }
-          });
-        }
-      });
-    }
-    return flag;
-  });
   return flag;
 }
 

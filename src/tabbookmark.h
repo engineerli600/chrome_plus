@@ -154,7 +154,6 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   bool is_on_one_tab = IsOnOneTab(top_container_view, pt);
   bool keep_tab = IsNeedKeep(top_container_view);
-  bool is_on_new_tab_button = IsOnNewTabButtonRightClick(top_container_view, pt);
 
   if (is_on_one_tab) {
     if (keep_tab) {
@@ -169,9 +168,6 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       // value (MAGIC_CODE).
       SendKey(VK_MBUTTON);
     }
-    return 1;
-  } else if (is_on_new_tab_button) {
-    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
     return 1;
   }
   return 0;
@@ -268,8 +264,6 @@ bool HandleBookmark(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return false;
 }
 
-
-
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode != HC_ACTION) {
     return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
@@ -308,14 +302,10 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (HandleBookmark(wParam, pmouse)) {
       return 1;
     }
-
-
-
+    
     if (HandleLeftClick(wParam, pmouse) != 0) {  // 添加对 HandleLeftClick 函数的调用
       return 1;
     }
-
-
   } while (0);
   return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
 }

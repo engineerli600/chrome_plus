@@ -3,6 +3,8 @@
 
 #include "iaccessible.h"
 
+#define IDC_PASTE_AND_GO 40256
+
 HHOOK mouse_hook = nullptr;
 
 #define KEY_PRESSED 0x8000
@@ -174,6 +176,7 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 }
 
 // Preserve the last tab when the middle button is clicked on the tab.
+// 处理鼠标中键点击事件
 int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_MBUTTONUP) {
     return 0;

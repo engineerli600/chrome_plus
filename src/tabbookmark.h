@@ -3,6 +3,7 @@
 
 #include "iaccessible.h"
 
+#define IDC_PASTE_AND_GO 40256
 
 
 HHOOK mouse_hook = nullptr;
@@ -178,7 +179,7 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 // Preserve the last tab when the middle button is clicked on the tab.
 // 处理鼠标中键点击事件
 int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if (wParam != WM_MBUTTONUP) {
+  if (wParam != WM_MBUTTONUP || IsPressed(VK_CONTROL) ) {
     return 0;
   }
 
@@ -193,7 +194,8 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool keep_tab = IsNeedKeep(top_container_view);
 
   if (is_on_one_tab && keep_tab) {
-    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
+    SendKey(VK_CONTROL, `H`);
+    //ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
     //ExecuteCommand(IDC_NEW_TAB, hwnd);
     //ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
     //ExecuteCommand(IDC_CLOSE_TAB, hwnd);

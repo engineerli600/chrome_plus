@@ -195,7 +195,7 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool keep_tab = IsNeedKeep(top_container_view);
 
   if (is_on_one_tab && keep_tab) {
-    SendKey(VK_CONTROL, H);
+    SendKey(VK_CONTROL, VK_H);
     ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
     ExecuteCommand(IDC_COPY_URL, hwnd);
     

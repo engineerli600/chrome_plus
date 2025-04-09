@@ -3,7 +3,7 @@
 
 #include "iaccessible.h"
 
-#define IDC_PASTE_AND_GO 40256
+
 
 HHOOK mouse_hook = nullptr;
 

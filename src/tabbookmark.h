@@ -258,13 +258,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   // 判断是否点击在新建标签按钮上
   if (IsOnNewTabButton(top_container_view, pt)) {
     // 模拟中键执行粘贴并访问good
-    //SendKey(VK_MBUTTON);
-
-    ExecuteCommand(IDC_NEW_TAB, hwnd);
-    Sleep(50);
-    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
-    //SendKey(VK_CONTROL, 'V');
-    //SendKey(VK_RETURN);
+    SendKey(VK_MBUTTON);
 
     //SendKey(VK_CONTROL, 'H');
     return 1;

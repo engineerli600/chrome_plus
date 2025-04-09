@@ -190,9 +190,10 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool keep_tab = IsNeedKeep(top_container_view);
 
   if (is_on_one_tab && keep_tab) {
-    ExecuteCommand(IDC_NEW_TAB, hwnd);
-    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
-    ExecuteCommand(IDC_CLOSE_TAB, hwnd);
+    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
+    //ExecuteCommand(IDC_NEW_TAB, hwnd);
+    //ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
+    //ExecuteCommand(IDC_CLOSE_TAB, hwnd);
     
     // ExecuteCommand(IDC_NEW_TAB, hwnd);
     // ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);

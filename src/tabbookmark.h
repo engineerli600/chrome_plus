@@ -5,6 +5,7 @@
 
 // https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/app/chrome_command_ids.h
 #define IDC_OPTIONS 40015
+#define IDC_MANAGE_EXTENSIONS 40022
 
 
 HHOOK mouse_hook = nullptr;
@@ -270,7 +271,12 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //SendKey(VK_MBUTTON);
 
     // for test
-    ExecuteCommand(IDC_OPTIONS, hwnd);
+    // 打开设置页面
+    // ExecuteCommand(IDC_OPTIONS, hwnd);
+
+    // 打开扩展程序页面
+    ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd); 
+
 
     //SendKey(VK_CONTROL, 'H');
     return 1;

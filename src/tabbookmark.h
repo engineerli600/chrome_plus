@@ -3,8 +3,8 @@
 
 #include "iaccessible.h"
 
-
-
+// https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/app/chrome_command_ids.h
+#define IDC_OPTIONS 40015
 
 
 HHOOK mouse_hook = nullptr;
@@ -76,6 +76,8 @@ class IniConfig {
 
 IniConfig config;
 
+// HandleMouseWheel 函数
+// 处理鼠标滚轮事件
 // Use the mouse wheel to switch tabs
 bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_MOUSEWHEEL ||
@@ -114,6 +116,8 @@ bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
   return false;
 }
 
+// HandleDoubleClick 函数
+// 处理双击事件
 // Double-click to close tab.
 int HandleDoubleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_LBUTTONDBLCLK || !config.is_double_click_close) {
@@ -143,6 +147,8 @@ int HandleDoubleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return 1;
 }
 
+// HandleRightClick 函数
+// 处理右键点击事件，用于关闭标签页（按住 Shift 键时显示原始菜单）
 // Right-click to close tab (Hold Shift to show the original menu).
 int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_RBUTTONUP || IsPressed(VK_SHIFT) ||
@@ -178,8 +184,9 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return 0;
 }
 
+// HandleMiddleClick 函数
+// 处理中键点击事件
 // Preserve the last tab when the middle button is clicked on the tab.
-// 处理鼠标中键点击事件
 int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_MBUTTONUP || IsPressed(VK_CONTROL) ) {
     return 0;
@@ -255,10 +262,15 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 0;
   }
 
+  bool is_on_new_tab_button = IsOnNewTabButton(top_container_view, pt);
+
   // 判断是否点击在新建标签按钮上
-  if (IsOnNewTabButton(top_container_view, pt)) {
+  if (is_on_new_tab_button) {
     // 模拟中键执行粘贴并访问good
-    SendKey(VK_MBUTTON);
+    //SendKey(VK_MBUTTON);
+
+    // for test
+    ExecuteCommand(IDC_OPTIONS, hwnd);
 
     //SendKey(VK_CONTROL, 'H');
     return 1;
@@ -267,6 +279,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return 0;
 }
 
+// 处理点击书签的事件
 // Open bookmarks in a new tab.
 bool HandleBookmark(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_LBUTTONUP || IsPressed(VK_CONTROL) || IsPressed(VK_SHIFT) ||
@@ -298,6 +311,8 @@ bool HandleBookmark(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return false;
 }
 
+// MouseProc 函数
+// 鼠标事件钩子函数，用于处理鼠标事件
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode != HC_ACTION) {
     return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
@@ -337,14 +352,16 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
       return 1;
     }
 
-    // 添加对HandleRightClickOnNewTabButton函数的调用
+    // 添加对 HandleRightClickOnNewTabButton 函数的调用
     if (HandleRightClickOnNewTabButton(wParam, pmouse) != 0) {
       return 1;
     }
-    
-    if (HandleLeftClick(wParam, pmouse) != 0) {  // 添加对 HandleLeftClick 函数的调用
+
+    // 添加对 HandleLeftClick 函数的调用
+    if (HandleLeftClick(wParam, pmouse) != 0) {
       return 1;
     }
+
   } while (0);
   return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
 }

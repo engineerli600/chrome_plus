@@ -4,8 +4,12 @@
 #include "iaccessible.h"
 
 // https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/app/chrome_command_ids.h
+// 打开设置页面
 #define IDC_OPTIONS 40015
+// 打开扩展程序页面
 #define IDC_MANAGE_EXTENSIONS 40022
+// 显示网站二维码
+#define IDC_QRCODE_GENERATOR 35021
 
 
 HHOOK mouse_hook = nullptr;
@@ -271,11 +275,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //SendKey(VK_MBUTTON);
 
     // for test
-    // 打开设置页面
-    // ExecuteCommand(IDC_OPTIONS, hwnd);
-
-    // 打开扩展程序页面
-    ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd); 
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd); 
 
 
     //SendKey(VK_CONTROL, 'H');

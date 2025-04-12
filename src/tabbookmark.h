@@ -293,8 +293,12 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       // good
       // mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
       // mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+
+      SetCursorPos(original_pt.x + 50, original_pt.y);
       mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
       mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+      SetCursorPos(original_pt.x, original_pt.y);
+
 
     }).detach();
 

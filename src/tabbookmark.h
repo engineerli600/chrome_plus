@@ -279,9 +279,18 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //SendKey(VK_MBUTTON);
 
     // for test
-    // 创建一个独立线程来执行命令，避免阻塞主线程
-    std::thread([hwnd]() {
-      ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+  
+    // 保存当前鼠标位置
+    POINT original_pt;
+    GetCursorPos(&original_pt);
+    
+    // 使用定时器延迟发送鼠标释放事件
+    std::thread([original_pt]() {
+      Sleep(100); // 等待100ms
+      
+      // 模拟鼠标释放
+      mouse_event(MOUSEEVENTF_LEFTUP, original_pt.x, original_pt.y, 0, 0);
     }).detach();
 
 

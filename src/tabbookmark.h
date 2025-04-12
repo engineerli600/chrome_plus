@@ -293,9 +293,9 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       // 移动到右侧50像素的位置
       SetCursorPos(original_pt.x + 50, original_pt.y);
       // 模拟鼠标点击 (点击后立即释放)
-      SendKey(VK_LBUTTON);
-      //mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-      //mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+      //SendKey(VK_LBUTTON);
+      mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+      mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
       // 移回原来的位置
       SetCursorPos(original_pt.x, original_pt.y); 
 

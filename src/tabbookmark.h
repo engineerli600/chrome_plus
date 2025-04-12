@@ -278,7 +278,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 创建一个独立线程来执行中键点击命令，避免阻塞主线程
     std::thread([]() {
       // 短暂延时，确保主线程已返回
-      Sleep(50);
+      Sleep(20);
       // 模拟中键点击执行粘贴并访问
       SendKey(VK_MBUTTON);
     }).detach();

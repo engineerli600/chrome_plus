@@ -287,10 +287,12 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     
     // 使用定时器延迟发送鼠标释放事件
     std::thread([original_pt]() {
-      Sleep(100); // 等待100ms
+      Sleep(50);
       
-      // 模拟鼠标释放
-      mouse_event(MOUSEEVENTF_LEFTDOWN, original_pt.x + 50, original_pt.y, 0, 0);
+      // 模拟鼠标
+      // mouse_event(MOUSEEVENTF_LEFTUP, original_pt.x + 50, original_pt.y, 0, 0);
+      mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+      mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
       
     }).detach();
 

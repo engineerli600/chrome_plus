@@ -279,10 +279,12 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //SendKey(VK_MBUTTON);
 
     // for test
-    //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    // 执行命令后，再次进行动作（比如切换到其他标签）会有1秒的卡顿，这时再点一下左键或右键或中键，可以解决此问题。
+    SendKey(VK_LBUTTON);
 
 
-    SendKey(VK_CONTROL, 'H');
+    //SendKey(VK_CONTROL, 'H');
     return 1;
   }
 

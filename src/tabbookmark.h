@@ -290,10 +290,12 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       Sleep(50);
       
       // 模拟鼠标
-      // mouse_event(MOUSEEVENTF_LEFTUP, original_pt.x + 50, original_pt.y, 0, 0);
-      mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-      mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
-      
+      // good
+      // mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+      // mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+      mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+      mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+
     }).detach();
 
 

@@ -272,7 +272,8 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   }
 
   bool is_on_new_tab_button = IsOnNewTabButton(top_container_view, pt);
-
+  bool is_on_one_tab = IsOnOneTab(top_container_view, pt);
+  
   // 判断是否点击在新建标签按钮上
   if (is_on_new_tab_button) {
     // 模拟中键执行粘贴并访问good
@@ -281,8 +282,10 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // for test
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     // 执行命令后，再次进行动作（比如切换到其他标签）会有1秒的卡顿，这时等500ms再点一下左键或右键或中键，可以解决此问题。
-    //Sleep(500);
-    //SendKey(VK_LBUTTON);
+    if (is_on_one_tab) {
+      SendKey(VK_LBUTTON);
+    }
+
 
 
     //SendKey(VK_CONTROL, 'H');

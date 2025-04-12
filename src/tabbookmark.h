@@ -289,31 +289,21 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 使用定时器延迟发送鼠标释放事件
     std::thread([original_pt]() {
       Sleep(50);
+
+      mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+      mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
       
-      // good
-      // 模拟鼠标右键点击，不移动位置
-      mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-      mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
-      
-      // good2
+/*      
       // 移动到右侧50像素的位置
-      //SetCursorPos(original_pt.x + 50, original_pt.y);
+      SetCursorPos(original_pt.x + 50, original_pt.y);
       // 模拟鼠标点击 (点击后立即释放)
-      //mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-      //mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+      mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+      mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
       // 移回原来的位置
-      //SetCursorPos(original_pt.x, original_pt.y);
-
-      // good3
-      //mouse_event(MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0);
-      //mouse_event(MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0);
-
-
+      SetCursorPos(original_pt.x, original_pt.y); 
+*/
 
     }).detach();
-
-
-
 
     //SendKey(VK_CONTROL, 'H');
     return 1;

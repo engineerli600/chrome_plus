@@ -276,12 +276,17 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   // 判断是否点击在新建标签按钮上
   if (is_on_new_tab_button) {
     // 模拟中键执行粘贴并访问good
-    SendKey(VK_MBUTTON);
+    //SendKey(VK_MBUTTON);
+
+    std::thread([hwnd]() {
+      SendKey(VK_MBUTTON);
+      Sleep(50);
+    }).detach();
 
     // for test
     //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     
- 
+/*  
     // 保存当前鼠标位置
     POINT original_pt;
     GetCursorPos(&original_pt);
@@ -301,6 +306,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 
     }).detach();
+*/
 
     //SendKey(VK_CONTROL, 'H');
     return 1;

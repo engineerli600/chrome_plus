@@ -290,7 +290,8 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       Sleep(100); // 等待100ms
       
       // 模拟鼠标释放
-      mouse_event(MOUSEEVENTF_LEFTUP, original_pt.x, original_pt.y, 0, 0);
+      //mouse_event(MOUSEEVENTF_LEFTUP, original_pt.x, original_pt.y, 0, 0);
+      SendKey(VK_LBUTTON);
     }).detach();
 
 

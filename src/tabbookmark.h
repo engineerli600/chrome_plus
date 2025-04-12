@@ -280,7 +280,8 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     // for test
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-  
+    
+/*   
     // 保存当前鼠标位置
     POINT original_pt;
     GetCursorPos(&original_pt);
@@ -291,13 +292,13 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       
       // 模拟鼠标
       // good
-      // mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-      // mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+      mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+      mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
       
       // good2
-      SetCursorPos(original_pt.x + 50, original_pt.y);
-      mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-      mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+      //SetCursorPos(original_pt.x + 50, original_pt.y);
+      //mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+      //mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
       //SetCursorPos(original_pt.x, original_pt.y);
 
       // good3
@@ -308,7 +309,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     }).detach();
 
-
+ */
 
 
     //SendKey(VK_CONTROL, 'H');

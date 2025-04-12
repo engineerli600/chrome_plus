@@ -276,12 +276,12 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   // 判断是否点击在新建标签按钮上
   if (is_on_new_tab_button) {
     // 模拟中键执行粘贴并访问good
-    //SendKey(VK_MBUTTON);
+    SendKey(VK_MBUTTON);
 
     // for test
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     
-/*   
+ 
     // 保存当前鼠标位置
     POINT original_pt;
     GetCursorPos(&original_pt);
@@ -290,15 +290,18 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     std::thread([original_pt]() {
       Sleep(50);
       
-      // 模拟鼠标
       // good
+      // 模拟鼠标右键点击，不移动位置
       mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
       mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
       
       // good2
+      // 移动到右侧50像素的位置
       //SetCursorPos(original_pt.x + 50, original_pt.y);
+      // 模拟鼠标点击 (点击后立即释放)
       //mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
       //mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+      // 移回原来的位置
       //SetCursorPos(original_pt.x, original_pt.y);
 
       // good3
@@ -309,7 +312,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     }).detach();
 
- */
+
 
 
     //SendKey(VK_CONTROL, 'H');

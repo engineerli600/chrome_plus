@@ -275,25 +275,14 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在新建标签按钮上
   if (is_on_new_tab_button) {
-
     // 模拟中键执行粘贴并访问good
     //SendKey(VK_MBUTTON);
 
     // for test
-    // 暂时取消鼠标钩子
-    HHOOK temp_hook = mouse_hook;
-    mouse_hook = NULL;
-    
-    // 执行命令
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    
-    // 短暂延时
-    Sleep(50);
-    
-    // 重新安装鼠标钩子
-    if (!mouse_hook) {
-      mouse_hook = temp_hook;
-    }
+    // 创建一个独立线程来执行命令，避免阻塞主线程
+    std::thread([hwnd]() {
+      ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    }).detach();
 
 
 

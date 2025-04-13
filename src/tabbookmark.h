@@ -299,7 +299,20 @@ int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   // 判断是否点击在 搜索标签页 按钮上
   if (is_on_search_tab_button) {
 
+    // 暂时取消鼠标钩子
+    HHOOK temp_hook = mouse_hook;
+    mouse_hook = NULL;
+    
+    // 执行命令
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    
+    // 短暂延时
+    Sleep(200);
+    
+    // 重新安装鼠标钩子
+    if (!mouse_hook) {
+      mouse_hook = temp_hook;
+    }
 
     //SendKey(VK_MBUTTON);
     return 1;

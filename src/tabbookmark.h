@@ -311,7 +311,10 @@ int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   // 判断是否点击在 搜索标签页 按钮上
   if (is_on_search_tab_button) {
 
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    std::thread([hwnd]() {
+      ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    }).detach();
+
     return 1;
   }
 

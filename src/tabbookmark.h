@@ -256,7 +256,7 @@ int HandleLeftClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return 0;  // 返回 0，表示未处理事件
 }
 
-// 处理右键点击新建标签按钮的事件
+// 处理 右键点击 新建标签 按钮的事件
 int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_RBUTTONUP) {
     return 0;
@@ -291,6 +291,33 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   return 0;
 }
+
+
+// 处理 右键点击 搜索标签页 按钮的事件
+int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+  if (wParam != WM_RBUTTONUP) {
+    return 0;
+  }
+
+  POINT pt = pmouse->pt;
+  HWND hwnd = WindowFromPoint(pt);
+  NodePtr top_container_view = HandleFindBar(hwnd, pt);
+  if (!top_container_view) {
+    return 0;
+  }
+
+  bool is_on_search_tab_button = IsOnSearchTabButton(top_container_view, pt);
+
+  // 判断是否点击在新建标签按钮上
+  if (is_on_search_tab_button) {
+
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    return 1;
+  }
+
+  return 0;
+}
+
 
 // 处理点击书签的事件
 // Open bookmarks in a new tab.
@@ -370,6 +397,11 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
       return 1;
     }
 
+    // 添加对 HandleRightClickOnSearchTabButton 函数的调用
+    if (HandleRightClickOnSearchTabButton(wParam, pmouse) != 0) {
+      return 1;
+    }
+    
     // 添加对 HandleLeftClick 函数的调用
     if (HandleLeftClick(wParam, pmouse) != 0) {
       return 1;

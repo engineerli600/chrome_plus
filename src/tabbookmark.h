@@ -288,7 +288,9 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // for test
     //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     //SendKey(VK_CONTROL, 'H');
-    SendKey(VK_MBUTTON);
+    //SendKey(VK_MBUTTON);
+    mouse_event(MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0);
+    mouse_event(MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0);
     return 1;
   }
 

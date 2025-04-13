@@ -312,7 +312,7 @@ int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_search_tab_button) {
 
     std::thread([hwnd]() {
-      Sleep(20);
+      Sleep(50);
       ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     }).detach();
 

@@ -295,7 +295,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理 右键点击 搜索标签页 按钮的事件
 int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if ( wParam != WM_RBUTTONUP || IsPressed(VK_CONTROL) ) {
+  if ( wParam != WM_RBUTTONUP ) {
     return 0;
   }
 
@@ -310,7 +310,8 @@ int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 搜索标签页 按钮上
   if (is_on_search_tab_button) {
-    SendKey(VK_CONTROL, 'H');
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    SendKey(VK_MBUTTON);
     return 1;
   }
 

@@ -295,7 +295,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理 右键点击 搜索标签页 按钮的事件
 int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if ( wParam != WM_RBUTTONUP || wParam == WM_LBUTTONUP ) {
+  if ( wParam != WM_RBUTTONUP || IsPressed(VK_CONTROL) ) {
     return 0;
   }
 
@@ -310,12 +310,7 @@ int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 搜索标签页 按钮上
   if (is_on_search_tab_button) {
-
-    std::thread([hwnd]() {
-      Sleep(50);
-      ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    }).detach();
-
+    SendKey(VK_CONTROL, 'H');
     return 1;
   }
 

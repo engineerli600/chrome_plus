@@ -3,6 +3,7 @@
 
 #include "iaccessible.h"
 
+// 也可以在utils.h文件添加，但如果在utils.h里添加就多修改一个文件。
 // https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/app/chrome_command_ids.h
 
 // 打开历史记录页面
@@ -197,7 +198,7 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 // 处理中键点击事件
 // Preserve the last tab when the middle button is clicked on the tab.
 int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if (wParam != WM_MBUTTONUP || IsPressed(VK_CONTROL) ) {
+  if (wParam != WM_MBUTTONUP) {
     return 0;
   }
 
@@ -257,7 +258,7 @@ int HandleLeftClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理右键点击新建标签按钮的事件
 int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if (wParam != WM_RBUTTONUP) {
+  if (wParam != WM_RBUTTONUP || wParam != WM_MBUTTONUP ) {
     return 0;
   }
 
@@ -272,6 +273,8 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在新建标签按钮上
   if (is_on_new_tab_button) {
+
+/*     
     // 创建一个独立线程来执行中键点击命令，避免阻塞主线程
     std::thread([]() {
       // 短暂延时，确保主线程已返回
@@ -280,11 +283,12 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       SendKey(VK_MBUTTON);
     }).detach();
 
-
+ */
 
     // for test
     //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     //SendKey(VK_CONTROL, 'H');
+    SendKey(VK_MBUTTON);
     return 1;
   }
 

@@ -271,7 +271,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   bool is_on_new_tab_button = IsOnNewTabButton(top_container_view, pt);
 
-  // 判断是否点击在新建标签按钮上
+  // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
 
 /*     
@@ -295,7 +295,7 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理 右键点击 搜索标签页 按钮的事件
 int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if (wParam != WM_RBUTTONUP) {
+  if ( wParam != WM_RBUTTONUP || wParam == WM_LBUTTONUP ) {
     return 0;
   }
 
@@ -308,7 +308,7 @@ int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   bool is_on_search_tab_button = IsOnSearchTabButton(top_container_view, pt);
 
-  // 判断是否点击在新建标签按钮上
+  // 判断是否点击在 搜索标签页 按钮上
   if (is_on_search_tab_button) {
 
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
@@ -401,7 +401,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (HandleRightClickOnSearchTabButton(wParam, pmouse) != 0) {
       return 1;
     }
-    
+
     // 添加对 HandleLeftClick 函数的调用
     if (HandleLeftClick(wParam, pmouse) != 0) {
       return 1;

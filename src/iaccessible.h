@@ -538,7 +538,7 @@ bool IsOnNewTabButton(NodePtr top_container_view, POINT pt) {
           // 获取元素的名称
           GetAccessibleName(child, [&flag, &child, &pt](BSTR bstr) {
             std::wstring_view bstr_view(bstr);
-            // 判断名称是否包含 "新建标签页" 或 "New Tab" 字样
+            // 判断名称是否包含 "新标签页" 或 "New tab" 字样
             if (bstr_view.find(L"新标签页") != std::wstring::npos ||
                 bstr_view.find(L"New tab") != std::wstring::npos) {
               // 获取按钮区域并检查点击位置

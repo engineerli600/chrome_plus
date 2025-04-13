@@ -259,7 +259,6 @@ int HandleLeftClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 // 处理右键点击新建标签按钮的事件
 int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_RBUTTONUP) {
-  //if (wParam != WM_RBUTTONUP || wParam == WM_MBUTTONUP ) {
     return 0;
   }
 
@@ -286,9 +285,6 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
  */
 
-    // for test
-    //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    //SendKey(VK_CONTROL, 'H');
     SendKey(VK_MBUTTON);
     return 1;
   }

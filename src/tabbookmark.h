@@ -273,18 +273,6 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
-
-/*     
-    // 创建一个独立线程来执行中键点击命令，避免阻塞主线程
-    std::thread([]() {
-      // 短暂延时，确保主线程已返回
-      Sleep(20);
-      // 模拟中键点击执行粘贴并访问
-      SendKey(VK_MBUTTON);
-    }).detach();
-
- */
-
     SendKey(VK_MBUTTON);
     return 1;
   }
@@ -310,8 +298,10 @@ int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 搜索标签页 按钮上
   if (is_on_search_tab_button) {
+
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    SendKey(VK_MBUTTON);
+
+    //SendKey(VK_MBUTTON);
     return 1;
   }
 

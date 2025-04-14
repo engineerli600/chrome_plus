@@ -305,6 +305,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_view_site_info_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    SendKey(VK_MBUTTON);
     return 1;
   }
 

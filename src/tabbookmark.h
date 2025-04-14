@@ -256,8 +256,8 @@ int HandleLeftClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return 0;  // 返回 0，表示未处理事件
 }
 
-// 处理 右键点击 新建标签 按钮的事件
-int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+// 处理 右键点击按钮 的事件
+int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_RBUTTONUP) {
     return 0;
   }
@@ -270,42 +270,25 @@ int HandleRightClickOnNewTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   }
 
   bool is_on_new_tab_button = IsOnNewTabButton(top_container_view, pt);
+  bool is_on_search_tab_button = IsOnSearchTabButton(top_container_view, pt);
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
+    // 在原版chrome上，在该按钮上点击中键可以新建标签页并执行粘贴并转到/搜索的功能。
     SendKey(VK_MBUTTON);
     return 1;
-  }
-
-  return 0;
-}
-
-
-// 处理 右键点击 搜索标签页 按钮的事件
-int HandleRightClickOnSearchTabButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if ( wParam != WM_RBUTTONUP ) {
-    return 0;
-  }
-
-  POINT pt = pmouse->pt;
-  HWND hwnd = WindowFromPoint(pt);
-  NodePtr top_container_view = HandleFindBar(hwnd, pt);
-  if (!top_container_view) {
-    return 0;
-  }
-
-  bool is_on_search_tab_button = IsOnSearchTabButton(top_container_view, pt);
-
-  // 判断是否点击在 搜索标签页 按钮上
-  if (is_on_search_tab_button) {
+  } else if (is_on_search_tab_button) {
+    // 判断是否点击在 搜索标签页 按钮上
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    // 打开页面后进行其他动作有卡顿，紧接着发送中键可以解决此问题
-    SendKey(VK_MBUTTON);
+    // 打开页面后进行其他动作有卡顿，紧接着发送左键或中键或右键可以解决此问题。
+    // 因为在原版chrome上，在该按钮上点击中键是无动作的，所以可以用来解决此问题。
+    //SendKey(VK_MBUTTON);
     return 1;
   }
 
   return 0;
 }
+
 
 
 // 处理点击书签的事件
@@ -381,15 +364,11 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
       return 1;
     }
 
-    // 添加对 HandleRightClickOnNewTabButton 函数的调用
-    if (HandleRightClickOnNewTabButton(wParam, pmouse) != 0) {
+    // 添加对 HandleRightClickButton 函数的调用
+    if (HandleRightClickButton(wParam, pmouse) != 0) {
       return 1;
     }
 
-    // 添加对 HandleRightClickOnSearchTabButton 函数的调用
-    if (HandleRightClickOnSearchTabButton(wParam, pmouse) != 0) {
-      return 1;
-    }
 
     // 添加对 HandleLeftClick 函数的调用
     if (HandleLeftClick(wParam, pmouse) != 0) {

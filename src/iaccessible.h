@@ -607,19 +607,10 @@ bool IsOnTabList(NodePtr top_container_view, POINT pt) {
       [&pt, &flag](NodePtr child) {
         // 查找角色为 ROLE_SYSTEM_PAGETABLIST 的元素
         if (GetAccessibleRole(child) == ROLE_SYSTEM_PAGETABLIST) {
-          // 获取角色文本进行确认
-          GetAccessibleRoleText(child, [&flag, &child, &pt](BSTR bstr) {
-            std::wstring_view bstr_view(bstr);
-            // 判断角色文本是否包含 "选项卡列表" 字样
-            if (bstr_view.find(L"选项卡列表") != std::wstring::npos ||
-                bstr_view.find(L"tab list") != std::wstring::npos ||
-                bstr_view.find(L"Tab List") != std::wstring::npos) {
-              // 获取选项卡列表区域并检查点击位置
-              GetAccessibleSize(child, [&flag, &pt](RECT rect) {
-                if (PtInRect(&rect, pt)) {
-                  flag = true;
-                }
-              });
+          // 获取选项卡列表区域并检查点击位置
+          GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+            if (PtInRect(&rect, pt)) {
+              flag = true;
             }
           });
         }

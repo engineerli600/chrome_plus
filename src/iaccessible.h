@@ -594,5 +594,78 @@ bool IsOnSearchTabButton(NodePtr top_container_view, POINT pt) {
 }
 
 
+// 检测鼠标是否在 返回 按钮上
+bool IsOnBackButton(NodePtr top_container_view, POINT pt) {
+  if (!top_container_view) {
+    return false;
+  }
+
+  bool flag = false;
+  // 遍历 top_container_view 的子元素
+  TraversalAccessible(
+      top_container_view,
+      [&pt, &flag](NodePtr child) {
+        // 查找角色为 ROLE_SYSTEM_PUSHBUTTON 的元素
+        if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
+          // 获取元素的名称
+          GetAccessibleName(child, [&flag, &child, &pt](BSTR bstr) {
+            std::wstring_view bstr_view(bstr);
+            // 判断名称是否包含 "返回" 或 "Back" 字样
+            if (bstr_view.find(L"返回") != std::wstring::npos ||
+                bstr_view.find(L"Back") != std::wstring::npos) {
+              // 获取按钮区域并检查点击位置
+              GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+                if (PtInRect(&rect, pt)) {
+                  flag = true;
+                }
+              });
+            }
+          });
+        }
+        return flag;  // 如果找到并确认点击位置在按钮上，停止遍历
+      },
+      true);  // 使用 raw_traversal 确保能找到所有元素
+
+  return flag;
+}
+
+
+
+// 检测鼠标是否在 重新加载 按钮上
+bool IsOnReloadButton(NodePtr top_container_view, POINT pt) {
+  if (!top_container_view) {
+    return false;
+  }
+
+  bool flag = false;
+  // 遍历 top_container_view 的子元素
+  TraversalAccessible(
+      top_container_view,
+      [&pt, &flag](NodePtr child) {
+        // 查找角色为 ROLE_SYSTEM_PUSHBUTTON 的元素
+        if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
+          // 获取元素的名称
+          GetAccessibleName(child, [&flag, &child, &pt](BSTR bstr) {
+            std::wstring_view bstr_view(bstr);
+            // 判断名称是否包含 "重新加载" 或 "Reload" 字样
+            if (bstr_view.find(L"重新加载") != std::wstring::npos ||
+                bstr_view.find(L"Reload") != std::wstring::npos) {
+              // 获取按钮区域并检查点击位置
+              GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+                if (PtInRect(&rect, pt)) {
+                  flag = true;
+                }
+              });
+            }
+          });
+        }
+        return flag;  // 如果找到并确认点击位置在按钮上，停止遍历
+      },
+      true);  // 使用 raw_traversal 确保能找到所有元素
+
+  return flag;
+}
+
+
 
 #endif  // IACCESSIBLE_H_

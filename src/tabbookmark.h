@@ -14,6 +14,10 @@
 #define IDC_MANAGE_EXTENSIONS 40022
 // 显示网站二维码
 #define IDC_QRCODE_GENERATOR 35021
+// 重新打开先前关闭的标签页
+#define IDC_OPEN_RECENT_TAB 40278
+// 清空缓存并重新加载
+#define IDC_RELOAD_CLEARING_CACHE 33009
 
 
 
@@ -271,6 +275,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   bool is_on_new_tab_button = IsOnNewTabButton(top_container_view, pt);
   bool is_on_search_tab_button = IsOnSearchTabButton(top_container_view, pt);
+  bool is_on_back_button = IsOnBackButton(top_container_view, pt);
+  bool is_on_reload_button = IsOnReloadButton(top_container_view, pt);
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
@@ -288,6 +294,12 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     SendKey(VK_MBUTTON);
 
+    return 1;
+  } else if (is_on_back_button) {
+    ExecuteCommand(IDC_OPEN_RECENT_TAB, hwnd);
+    return 1;
+  } else if (is_on_reload_button) {
+    ExecuteCommand(IDC_RELOAD_CLEARING_CACHE, hwnd);
     return 1;
   }
 

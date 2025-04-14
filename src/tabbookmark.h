@@ -101,10 +101,8 @@ bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
   PMOUSEHOOKSTRUCTEX pwheel = (PMOUSEHOOKSTRUCTEX)lParam;
   int zDelta = GET_WHEEL_DELTA_WPARAM(pwheel->mouseData);
 
-  bool is_on_tab_list = IsOnTabList(top_container_view);
-
   // If the mouse wheel is used to switch tabs when the mouse is on the tab bar.
-  if (config.is_wheel_tab && is_on_tab_list ) {
+  if (config.is_wheel_tab && IsOnTheTabBar(top_container_view, pmouse->pt)) {
     hwnd = GetTopWnd(hwnd);
     if (zDelta > 0) {
       ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
@@ -297,6 +295,46 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 }
 
 
+// 处理鼠标在选项卡列表上的滚轮事件
+bool HandleTabListMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
+  if (wParam != WM_MOUSEWHEEL) {
+    return false;
+  }
+
+  // 获取鼠标位置和窗口句柄
+  POINT pt = pmouse->pt;
+  HWND hwnd = WindowFromPoint(pt);
+  
+  // 获取顶层容器视图
+  NodePtr top_container_view = HandleFindBar(hwnd, pt);
+  if (!top_container_view) {
+    return false;
+  }
+
+  // 检查鼠标是否在选项卡列表上
+  if (!IsOnTabList(top_container_view, pt)) {
+    return false;
+  }
+
+  // 获取滚轮滚动方向
+  // HIWORD(pmouse->mouseData)返回的值为正时表示向前滚动，为负时表示向后滚动
+  short zDelta = HIWORD(pmouse->mouseData);
+  
+  // 根据滚动方向切换标签页
+  if (zDelta > 0) {
+    // 滚轮向前滚动，切换到上一个标签页
+    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
+  } else {
+    // 滚轮向后滚动，切换到下一个标签页
+    ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
+  }
+
+  return true;
+}
+
+
+
+
 
 // 处理点击书签的事件
 // Open bookmarks in a new tab.
@@ -376,6 +414,9 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
       return 1;
     }
 
+    if (HandleTabListMouseWheel(wParam, lParam, pmouse)) {
+      return 1;
+    }
 
     // 添加对 HandleLeftClick 函数的调用
     if (HandleLeftClick(wParam, pmouse) != 0) {

@@ -324,10 +324,10 @@ bool HandleTabListMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmou
   hwnd = GetTopWnd(hwnd);
   if (zDelta > 0) {
     // 滚轮向前滚动，切换到上一个标签页
-    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
+    SendKey(VK_CONTROL, VK_SHIFT, VK_TAB);
   } else {
     // 滚轮向后滚动，切换到下一个标签页
-    ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
+    SendKey(VK_CONTROL, VK_TAB);
   }
 
   return true;

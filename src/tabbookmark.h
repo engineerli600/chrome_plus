@@ -317,8 +317,7 @@ bool HandleTabListMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmou
   }
 
   // 获取滚轮滚动方向
-  // HIWORD(pmouse->mouseData)返回的值为正时表示向前滚动，为负时表示向后滚动
-  short zDelta = HIWORD(pmouse->mouseData);
+  int zDelta = GET_WHEEL_DELTA_WPARAM(pwheel->mouseData);
   
   // 根据滚动方向切换标签页
   if (zDelta > 0) {

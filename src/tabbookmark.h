@@ -101,8 +101,10 @@ bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
   PMOUSEHOOKSTRUCTEX pwheel = (PMOUSEHOOKSTRUCTEX)lParam;
   int zDelta = GET_WHEEL_DELTA_WPARAM(pwheel->mouseData);
 
+  bool is_on_tab_list = IsOnTabList(NodePtr top_container_view, POINT pt)
+
   // If the mouse wheel is used to switch tabs when the mouse is on the tab bar.
-  if (config.is_wheel_tab && IsOnTheTabBar(top_container_view, pmouse->pt)) {
+  if (config.is_wheel_tab && is_on_tab_list ) {
     hwnd = GetTopWnd(hwnd);
     if (zDelta > 0) {
       ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);

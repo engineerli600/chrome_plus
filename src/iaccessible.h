@@ -594,4 +594,42 @@ bool IsOnSearchTabButton(NodePtr top_container_view, POINT pt) {
 }
 
 
+// 检测鼠标是否在选项卡列表上
+bool IsOnTabList(NodePtr top_container_view, POINT pt) {
+  if (!top_container_view) {
+    return false;
+  }
+
+  bool flag = false;
+  // 遍历 top_container_view 的子元素
+  TraversalAccessible(
+      top_container_view,
+      [&pt, &flag](NodePtr child) {
+        // 查找角色为 ROLE_SYSTEM_PAGETABLIST 的元素
+        if (GetAccessibleRole(child) == ROLE_SYSTEM_PAGETABLIST) {
+          // 获取角色文本进行确认
+          GetAccessibleRoleText(child, [&flag, &child, &pt](BSTR bstr) {
+            std::wstring_view bstr_view(bstr);
+            // 判断角色文本是否包含 "选项卡列表" 字样
+            if (bstr_view.find(L"选项卡列表") != std::wstring::npos ||
+                bstr_view.find(L"tab list") != std::wstring::npos ||
+                bstr_view.find(L"Tab List") != std::wstring::npos) {
+              // 获取选项卡列表区域并检查点击位置
+              GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+                if (PtInRect(&rect, pt)) {
+                  flag = true;
+                }
+              });
+            }
+          });
+        }
+        return flag;  // 如果找到并确认点击位置在选项卡列表上，停止遍历
+      },
+      true);  // 使用 raw_traversal 确保能找到所有元素
+
+  return flag;
+}
+
+
+
 #endif  // IACCESSIBLE_H_

@@ -279,6 +279,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
+    Sleep(100);
     SendKey(VK_CONTROL, 'H');
     //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     // 打开页面后进行其他动作有卡顿，紧接着发送左键或中键或右键可以解决此问题。

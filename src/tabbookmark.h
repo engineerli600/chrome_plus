@@ -301,11 +301,10 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     SendKey(VK_RBUTTON);
     return 1;
   } else if (is_on_bookmark_button) {
-    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    ExecuteCommand(IDC_NEW_TAB, hwnd);
     return 1;
   } else if (is_on_view_site_info_button) {
-    ExecuteCommand(IDC_RESTORE_TAB, hwnd);
-    SendKey(VK_MBUTTON);
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
     return 1;
   }
 

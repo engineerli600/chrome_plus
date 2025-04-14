@@ -297,26 +297,22 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理鼠标在选项卡列表上的滚轮事件
 bool HandleTabListMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
+  // 检查是否为鼠标滚轮消息
   if (wParam != WM_MOUSEWHEEL) {
     return false;
   }
 
-  // 获取鼠标位置和窗口句柄
-  POINT pt = pmouse->pt;
-  HWND hwnd = WindowFromPoint(pt);
+  // 获取窗口句柄
+  HWND hwnd = GetFocus();
+  NodePtr top_container_view = GetTopContainerView(hwnd);
   
-  // 获取顶层容器视图
-  NodePtr top_container_view = HandleFindBar(hwnd, pt);
-  if (!top_container_view) {
-    return false;
-  }
-
   // 检查鼠标是否在选项卡列表上
-  if (!IsOnTabList(top_container_view, pt)) {
+  if (!IsOnTabList(top_container_view, pmouse->pt)) {
     return false;
   }
-
-  // 通过lParam获取滚轮数据，而不是通过pmouse
+  
+  // 从wParam获取滚轮增量
+  // 在WM_MOUSEWHEEL消息中，高位WORD存储滚轮增量
   int zDelta = GET_WHEEL_DELTA_WPARAM(((MSLLHOOKSTRUCT*)lParam)->mouseData);
   
   // 根据滚动方向切换标签页

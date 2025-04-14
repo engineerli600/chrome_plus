@@ -316,10 +316,12 @@ bool HandleTabListMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmou
     return false;
   }
 
-  // 获取滚轮滚动方向
+  // 正确获取滚轮数据
+  PMOUSEHOOKSTRUCTEX pwheel = (PMOUSEHOOKSTRUCTEX)lParam;
   int zDelta = GET_WHEEL_DELTA_WPARAM(pwheel->mouseData);
   
   // 根据滚动方向切换标签页
+  hwnd = GetTopWnd(hwnd);
   if (zDelta > 0) {
     // 滚轮向前滚动，切换到上一个标签页
     ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);

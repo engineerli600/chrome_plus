@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (SemVer)'
+        description: 'Release version (SemVer), For example: 1.12.0 '
         required: true
 
 jobs:

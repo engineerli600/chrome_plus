@@ -282,7 +282,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     // 打开页面后进行其他动作有卡顿，紧接着发送左键或中键或右键可以解决此问题。
     // 因为在原版chrome上，在该按钮上点击中键是无动作的，所以可以用来解决此问题。
-    SendKey(VK_MBUTTON);
+    //SendKey(VK_MBUTTON);
+    SendKey(VK_LBUTTON);
     return 1;
   }
 

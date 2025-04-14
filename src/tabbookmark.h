@@ -15,7 +15,7 @@
 // 显示网站二维码
 #define IDC_QRCODE_GENERATOR 35021
 // 重新打开先前关闭的标签页
-#define IDC_OPEN_RECENT_TAB 40278
+#define IDC_RESTORE_TAB 34028
 // 清空缓存并重新加载
 #define IDC_RELOAD_CLEARING_CACHE 33009
 
@@ -296,10 +296,11 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     return 1;
   } else if (is_on_back_button) {
-    ExecuteCommand(IDC_OPEN_RECENT_TAB, hwnd);
+    ExecuteCommand(IDC_RESTORE_TAB, hwnd);
     return 1;
   } else if (is_on_reload_button) {
     ExecuteCommand(IDC_RELOAD_CLEARING_CACHE, hwnd);
+    SendKey(VK_RBUTTON);
     return 1;
   }
 

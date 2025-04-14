@@ -277,9 +277,10 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 在原版chrome上，在该按钮上点击中键可以新建标签页并执行粘贴并转到/搜索的功能。
     SendKey(VK_MBUTTON);
     return 1;
-  } else if (is_on_search_tab_button) {
     // 判断是否点击在 搜索标签页 按钮上
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+  } else if (is_on_search_tab_button) {
+    SendKey(VK_CONTROL, 'H');
+    //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     // 打开页面后进行其他动作有卡顿，紧接着发送左键或中键或右键可以解决此问题。
     // 因为在原版chrome上，在该按钮上点击中键是无动作的，所以可以用来解决此问题。
     //SendKey(VK_MBUTTON);

@@ -295,77 +295,6 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 }
 
 
-// 处理鼠标在选项卡列表上的滚轮事件
-bool HandleTabListMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
-  // 1. 确保是鼠标滚轮事件
-  if (wParam != WM_MOUSEWHEEL) {
-    return false;
-  }
-
-  // 2. 获取鼠标位置和窗口句柄
-  POINT pt = pmouse->pt;
-  HWND hwnd = WindowFromPoint(pt);
-
-  // 记录调试信息
-  DebugLog("HandleTabListMouseWheel: 鼠标滚轮事件触发");
-
-  // 3. 获取容器视图
-  NodePtr top_container_view = HandleFindBar(hwnd, pt);
-  if (!top_container_view) {
-    DebugLog("HandleTabListMouseWheel: top_container_view为空");
-    return false;
-  }
-
-  // 4. 检查是否在标签页列表上
-  // 使用两种不同的方法确认鼠标位置
-  bool is_on_tab_list = IsOnTabList(top_container_view, pt);
-  bool is_on_tab_bar = IsOnTheTabBar(top_container_view, pt);
-  
-  DebugLog("HandleTabListMouseWheel: is_on_tab_list=" + std::to_string(is_on_tab_list) + 
-           ", is_on_tab_bar=" + std::to_string(is_on_tab_bar));
-  
-  if (!is_on_tab_list && !is_on_tab_bar) {
-    return false;
-  }
-
-  // 5. 获取滚轮方向 - 使用多种方法尝试获取
-  int zDelta = 0;
-  if (pmouse->dwExtraInfo == MAGIC_CODE) {
-    // 如果是我们自己模拟的事件
-    zDelta = (int)(short)HIWORD(pmouse->mouseData);
-  } else {
-    // 对于系统实际的滚轮事件
-    zDelta = (int)(short)HIWORD(wParam);
-  }
-
-  DebugLog("HandleTabListMouseWheel: zDelta=" + std::to_string(zDelta));
-  
-  // 6. 获取顶层窗口并执行命令
-  hwnd = GetTopWnd(hwnd);
-  if (zDelta > 0) {
-    // 滚轮向前，切换到上一个标签
-    DebugLog("HandleTabListMouseWheel: 切换到上一个标签");
-    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
-  } else {
-    // 滚轮向后，切换到下一个标签
-    DebugLog("HandleTabListMouseWheel: 切换到下一个标签");
-    ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
-  }
-
-  // 返回true表示已处理事件
-  return true;
-}
-
-// 调试日志函数
-inline void DebugLog(const std::string& message) {
-#ifdef _DEBUG
-  OutputDebugStringA(message.c_str());
-  OutputDebugStringA("\n");
-#endif
-}
-
-
-
 
 // 处理点击书签的事件
 // Open bookmarks in a new tab.
@@ -442,10 +371,6 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
 
     // 添加对 HandleRightClickButton 函数的调用
     if (HandleRightClickButton(wParam, pmouse) != 0) {
-      return 1;
-    }
-
-    if (HandleTabListMouseWheel(wParam, lParam, pmouse)) {
       return 1;
     }
 

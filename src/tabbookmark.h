@@ -316,23 +316,21 @@ bool HandleTabListMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmou
     return false;
   }
 
-  // 正确获取滚轮数据
-  PMOUSEHOOKSTRUCTEX pwheel = (PMOUSEHOOKSTRUCTEX)lParam;
-  int zDelta = GET_WHEEL_DELTA_WPARAM(pwheel->mouseData);
+  // 通过lParam获取滚轮数据，而不是通过pmouse
+  int zDelta = GET_WHEEL_DELTA_WPARAM(((MSLLHOOKSTRUCT*)lParam)->mouseData);
   
   // 根据滚动方向切换标签页
   hwnd = GetTopWnd(hwnd);
   if (zDelta > 0) {
     // 滚轮向前滚动，切换到上一个标签页
-    SendKey(VK_CONTROL, VK_SHIFT, VK_TAB);
+    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
   } else {
     // 滚轮向后滚动，切换到下一个标签页
-    SendKey(VK_CONTROL, VK_TAB);
+    ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
   }
 
   return true;
 }
-
 
 
 

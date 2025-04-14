@@ -629,45 +629,35 @@ bool IsOnReloadButton(NodePtr top_container_view, POINT pt) {
 }
 
 
-// 检测鼠标是否在"为此标签页添加书签"按钮上
-bool IsOnAddBookmarkButton(NodePtr top_container_view, POINT pt) {
+// 检测鼠标是否在 为此标签页修改书签 按钮上
+bool IsOnBookmarkButton(NodePtr top_container_view, POINT pt) {
   if (!top_container_view) {
     return false;
   }
 
   bool flag = false;
-  // 先遍历找到ROLE_SYSTEM_PANE角色的元素
+  // 遍历 top_container_view 的子元素
   TraversalAccessible(
       top_container_view,
       [&pt, &flag](NodePtr child) {
-        // 查找角色为 ROLE_SYSTEM_PANE 的元素
-        if (GetAccessibleRole(child) == ROLE_SYSTEM_PANE) {
-          // 在PANE中查找书签按钮
-          TraversalAccessible(
-              child,
-              [&pt, &flag](NodePtr button_child) {
-                // 查找角色为 ROLE_SYSTEM_PUSHBUTTON 的元素
-                if (GetAccessibleRole(button_child) == ROLE_SYSTEM_PUSHBUTTON) {
-                  // 获取元素的名称
-                  GetAccessibleName(button_child, [&flag, &button_child, &pt](BSTR bstr) {
-                    std::wstring_view bstr_view(bstr);
-                    // 判断名称是否包含"为此标签页添加书签"、"添加书签"或者英文对应词汇
-                    if (bstr_view.find(L"为此标签页添加书签") != std::wstring::npos ||
-                        bstr_view.find(L"Edit bookmark for this tab") != std::wstring::npos) {
-                      // 获取按钮区域并检查点击位置
-                      GetAccessibleSize(button_child, [&flag, &pt](RECT rect) {
-                        if (PtInRect(&rect, pt)) {
-                          flag = true;
-                        }
-                      });
-                    }
-                  });
+        // 查找角色为 ROLE_SYSTEM_PUSHBUTTON 的元素
+        if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
+          // 获取元素的名称
+          GetAccessibleName(child, [&flag, &child, &pt](BSTR bstr) {
+            std::wstring_view bstr_view(bstr);
+            // 判断名称是否包含 "为此标签页修改书签" 或 "Edit bookmark for this tab" 字样
+            if (bstr_view.find(L"为此标签页修改书签") != std::wstring::npos ||
+                bstr_view.find(L"Edit bookmark for this tab") != std::wstring::npos) {
+              // 获取按钮区域并检查点击位置
+              GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+                if (PtInRect(&rect, pt)) {
+                  flag = true;
                 }
-                return flag;  // 如果找到并确认点击位置在按钮上，停止遍历
-              },
-              true);  // 使用 raw_traversal 确保能找到所有元素
+              });
+            }
+          });
         }
-        return flag;  // 如果已经找到了按钮，停止遍历
+        return flag;  // 如果找到并确认点击位置在按钮上，停止遍历
       },
       true);  // 使用 raw_traversal 确保能找到所有元素
 

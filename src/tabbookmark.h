@@ -18,6 +18,8 @@
 #define IDC_RESTORE_TAB 34028
 // 清空缓存并重新加载
 #define IDC_RELOAD_CLEARING_CACHE 33009
+// 复制网页地址
+#define IDC_COPY_URL 34060
 
 
 
@@ -276,7 +278,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_new_tab_button = IsOnNewTabButton(top_container_view, pt);
   bool is_on_search_tab_button = IsOnSearchTabButton(top_container_view, pt);
   bool is_on_reload_button = IsOnReloadButton(top_container_view, pt);
-  bool is_on_add_bookmark_button = IsOnAddBookmarkButton(top_container_view, pt);
+  bool is_on_bookmark_button = IsOnBookmarkButton(top_container_view, pt);
   bool is_on_view_site_info_button = IsOnViewSiteInfoButton(top_container_view, pt);
 
   // 判断是否点击在 新建标签 按钮上
@@ -300,11 +302,12 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     ExecuteCommand(IDC_RELOAD_CLEARING_CACHE, hwnd);
     SendKey(VK_RBUTTON);
     return 1;
-  } else if (is_on_add_bookmark_button) {
-    ExecuteCommand(IDC_NEW_TAB, hwnd);
+  } else if (is_on_bookmark_button) {
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
-    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    ExecuteCommand(IDC_COPY_URL, hwnd);
     SendKey(VK_MBUTTON);
     return 1;
   }

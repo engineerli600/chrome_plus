@@ -216,6 +216,7 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   bool is_on_one_tab = IsOnOneTab(top_container_view, pt);
   bool keep_tab = IsNeedKeep(top_container_view);
+  bool is_on_bookmark_history = IsOnBookmarkHistory(hwnd, pt);
 
   if (is_on_one_tab && keep_tab) {
     ExecuteCommand(IDC_NEW_TAB, hwnd);
@@ -224,6 +225,9 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     
     // ExecuteCommand(IDC_NEW_TAB, hwnd);
     // ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
+    return 1;
+  } else if (is_on_bookmark_history) {
+    // 返回1表示已处理此事件，阻止默认的中键点击行为
     return 1;
   }
 

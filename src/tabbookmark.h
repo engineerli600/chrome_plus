@@ -299,7 +299,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     return 1;
   } else if (is_on_reload_button) {
-    ExecuteCommand(IDC_RELOAD_CLEARING_CACHE, hwnd);
+    ExecuteCommand(IDC_RESTORE_TAB, hwnd);
     SendKey(VK_RBUTTON);
     return 1;
   } else if (is_on_bookmark_button) {
@@ -307,7 +307,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
-    ExecuteCommand(IDC_COPY_URL, hwnd);
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
     SendKey(VK_MBUTTON);
     return 1;
   }

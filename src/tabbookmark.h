@@ -300,7 +300,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_reload_button) {
     ExecuteCommand(IDC_RESTORE_TAB, hwnd);
-    SendKey(VK_RBUTTON);
+    SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_bookmark_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
@@ -308,13 +308,35 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_view_site_info_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
-    SendKey(VK_MBUTTON);
+    //SendKey(VK_MBUTTON);
     return 1;
   }
 
   return 0;
 }
 
+
+// 处理中键点击刷新按钮的事件
+int HandleMiddleClickOnReloadButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+  if (wParam != WM_MBUTTONUP) {
+    return 0;
+  }
+
+  POINT pt = pmouse->pt;
+  HWND hwnd = WindowFromPoint(pt);
+  NodePtr top_container_view = HandleFindBar(hwnd, pt);
+  if (!top_container_view) {
+    return 0;
+  }
+
+  // 判断是否点击在重新加载按钮上
+  if (IsOnReloadButton(top_container_view, pt)) {
+    // 返回1表示已处理此事件，阻止默认的中键点击行为
+    return 1;
+  }
+
+  return 0;
+}
 
 
 // 处理点击书签的事件
@@ -395,6 +417,11 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
       return 1;
     }
 
+    // 在这里添加对中键点击刷新按钮的处理
+    if (HandleMiddleClickOnReloadButton(wParam, pmouse) != 0) {
+      return 1;
+    }
+       
     // 添加对 HandleLeftClick 函数的调用
     if (HandleLeftClick(wParam, pmouse) != 0) {
       return 1;

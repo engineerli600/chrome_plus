@@ -322,15 +322,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理 右键点击 书签上的按钮 的事件
 int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if (wParam != WM_RBUTTONUP) {
-    return 0;
-  }
-
-  // 检查Shift键是否按下
-  bool shift_pressed = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-
-  // 如果Shift键被按下，则不拦截事件，让Chrome显示原始右键菜单
-  if (shift_pressed) {
+  // 如果不是右键释放事件，或者Shift键被按下，则不拦截，让Chrome显示原始右键菜单
+  if (wParam != WM_RBUTTONUP || IsPressed(VK_SHIFT)) {
     return 0;
   }
 
@@ -345,7 +338,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_bookmark_history) {
     ExecuteCommand(IDC_RESTORE_TAB, hwnd);
-    SendKey(VK_LBUTTON);
+    //SendKey(VK_LBUTTON);
     return 1;
   }
 

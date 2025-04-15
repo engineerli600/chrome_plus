@@ -281,7 +281,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_view_site_info_button = IsOnViewSiteInfoButton(top_container_view, pt);
   bool is_on_extensions_button = IsOnExtensionsButton(top_container_view, pt);
   bool is_on_chromium_button = IsOnChromiumButton(top_container_view, pt);
-  bool is_on_history_button = IsOnHistoryButton(hwnd, pt);
+  bool is_on_bookmark_history = IsOnBookmarkHistory(hwnd, pt);
 
 
   // 判断是否点击在 新建标签 按钮上
@@ -316,7 +316,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
     SendKey(VK_MBUTTON);
     return 1;
-  } else if (is_on_history_button) {
+  } else if (is_on_bookmark_history) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;

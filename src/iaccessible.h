@@ -739,7 +739,7 @@ bool IsOnChromiumButton(NodePtr top_container_view, POINT pt) {
 
 
 // 检测鼠标是否在书签栏里的名称包含 "history" 字样的按钮上
-bool IsOnHistoryButton(HWND hwnd, POINT pt) {
+bool IsOnBookmarkHistory(HWND hwnd, POINT pt) {
   bool flag = false;
   std::function<bool(NodePtr)> LambdaEnumChild =
       [&pt, &flag, &LambdaEnumChild](NodePtr child) -> bool {
@@ -754,34 +754,22 @@ bool IsOnHistoryButton(HWND hwnd, POINT pt) {
       if (is_in_rect) {
         // 检查按钮名称是否包含 "history" 字样
         GetAccessibleName(child, [&flag](BSTR bstr) {
-          if (bstr) {
-            std::wstring name_lower = bstr;
-            // 转换为小写以进行不区分大小写的比较
-            std::transform(name_lower.begin(), name_lower.end(), name_lower.begin(), 
-                          [](wchar_t c) { return std::towlower(c); });
-            
-            // 检查名称中是否包含 "history" 字样
-            if (name_lower.find(L"history") != std::wstring::npos ||
-                name_lower.find(L"历史") != std::wstring::npos) {
-              flag = true;
-            }
+          std::wstring_view bstr_view(bstr);
+          // 检查名称中是否包含 "history" 或 "历史" 字样
+          if (bstr_view.find(L"history") != std::wstring_view::npos ||
+              bstr_view.find(L"历史") != std::wstring_view::npos) {
+            flag = true;
           }
         });
         
         // 如果通过名称没有找到，尝试检查描述
         if (!flag) {
           GetAccessibleDescription(child, [&flag](BSTR bstr) {
-            if (bstr) {
-              std::wstring desc_lower = bstr;
-              // 转换为小写以进行不区分大小写的比较
-              std::transform(desc_lower.begin(), desc_lower.end(), desc_lower.begin(), 
-                            [](wchar_t c) { return std::towlower(c); });
-              
-              // 检查描述中是否包含 "history" 字样
-              if (desc_lower.find(L"history") != std::wstring::npos ||
-                  desc_lower.find(L"历史") != std::wstring::npos) {
-                flag = true;
-              }
+            std::wstring_view bstr_view(bstr);
+            // 检查描述中是否包含 "history" 或 "历史" 字样
+            if (bstr_view.find(L"history") != std::wstring_view::npos ||
+                bstr_view.find(L"历史") != std::wstring_view::npos) {
+              flag = true;
             }
           });
         }
@@ -792,23 +780,13 @@ bool IsOnHistoryButton(HWND hwnd, POINT pt) {
       }
     }
 
-    bool stop = false;
-    EnumChildAccessibles(child, [&LambdaEnumChild, &stop](NodePtr child) {
-      if (LambdaEnumChild(child)) {
-        stop = true;
-        return true;  // Stop enumerating.
-      }
-      return false;  // Continue enumerating.
-    });
-
-    return stop;  // Stop parent traversal if child found.
+    // 遍历子节点
+    TraversalAccessible(child, LambdaEnumChild);
+    return flag;
   };
 
-  NodePtr top_container_view = GetTopContainerView(hwnd);
-  if (top_container_view) {
-    LambdaEnumChild(top_container_view);
-  }
-
+  // 开始遍历
+  TraversalAccessible(GetChromeWidgetWin(hwnd), LambdaEnumChild);
   return flag;
 }
 

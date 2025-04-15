@@ -738,36 +738,76 @@ bool IsOnChromiumButton(NodePtr top_container_view, POINT pt) {
 }
 
 
-// 检测鼠标是否在 history 按钮上
-bool IsOnHistoryButton(NodePtr top_container_view, POINT pt) {
-  if (!top_container_view) {
-    return false;
-  }
-
+// 检测鼠标是否在书签栏里的名称包含 "history" 字样的按钮上
+bool IsOnHistoryButton(HWND hwnd, POINT pt) {
   bool flag = false;
-  // 遍历 top_container_view 的子元素
-  TraversalAccessible(
-      top_container_view,
-      [&pt, &flag](NodePtr child) {
-        // 查找角色为 ROLE_SYSTEM_BUTTONMENU 的元素
-        if (GetAccessibleRole(child) == ROLE_SYSTEM_BUTTONMENU) {
-          // 获取元素的名称
-          GetAccessibleName(child, [&flag, &child, &pt](BSTR bstr) {
-            std::wstring_view bstr_view(bstr);
-            // 判断名称是否包含 "history" 字样
-            if (bstr_view.find(L"history") != std::wstring::npos) {
-              // 获取按钮区域并检查点击位置
-              GetAccessibleSize(child, [&flag, &pt](RECT rect) {
-                if (PtInRect(&rect, pt)) {
-                  flag = true;
-                }
-              });
+  std::function<bool(NodePtr)> LambdaEnumChild =
+      [&pt, &flag, &LambdaEnumChild](NodePtr child) -> bool {
+    auto role = GetAccessibleRole(child);
+    if (role == ROLE_SYSTEM_PUSHBUTTON || role == ROLE_SYSTEM_MENUITEM) {
+      bool is_in_rect = false;
+      GetAccessibleSize(child, [&is_in_rect, &pt](const RECT& rect) {
+        if (PtInRect(&rect, pt)) {
+          is_in_rect = true;
+        }
+      });
+      if (is_in_rect) {
+        // 检查按钮名称是否包含 "history" 字样
+        GetAccessibleName(child, [&flag](BSTR bstr) {
+          if (bstr) {
+            std::wstring name_lower = bstr;
+            // 转换为小写以进行不区分大小写的比较
+            std::transform(name_lower.begin(), name_lower.end(), name_lower.begin(), 
+                          [](wchar_t c) { return std::towlower(c); });
+            
+            // 检查名称中是否包含 "history" 字样
+            if (name_lower.find(L"history") != std::wstring::npos ||
+                name_lower.find(L"历史") != std::wstring::npos) {
+              flag = true;
+            }
+          }
+        });
+        
+        // 如果通过名称没有找到，尝试检查描述
+        if (!flag) {
+          GetAccessibleDescription(child, [&flag](BSTR bstr) {
+            if (bstr) {
+              std::wstring desc_lower = bstr;
+              // 转换为小写以进行不区分大小写的比较
+              std::transform(desc_lower.begin(), desc_lower.end(), desc_lower.begin(), 
+                            [](wchar_t c) { return std::towlower(c); });
+              
+              // 检查描述中是否包含 "history" 字样
+              if (desc_lower.find(L"history") != std::wstring::npos ||
+                  desc_lower.find(L"历史") != std::wstring::npos) {
+                flag = true;
+              }
             }
           });
         }
-        return flag;  // 如果找到并确认点击位置在按钮上，停止遍历
-      },
-      true);  // 使用 raw_traversal 确保能找到所有元素
+        
+        if (flag) {
+          return true;  // 如果找到匹配项，停止遍历
+        }
+      }
+    }
+
+    bool stop = false;
+    EnumChildAccessibles(child, [&LambdaEnumChild, &stop](NodePtr child) {
+      if (LambdaEnumChild(child)) {
+        stop = true;
+        return true;  // Stop enumerating.
+      }
+      return false;  // Continue enumerating.
+    });
+
+    return stop;  // Stop parent traversal if child found.
+  };
+
+  NodePtr top_container_view = GetTopContainerView(hwnd);
+  if (top_container_view) {
+    LambdaEnumChild(top_container_view);
+  }
 
   return flag;
 }

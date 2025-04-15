@@ -281,6 +281,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_view_site_info_button = IsOnViewSiteInfoButton(top_container_view, pt);
   bool is_on_extensions_button = IsOnExtensionsButton(top_container_view, pt);
   bool is_on_chromium_button = IsOnChromiumButton(top_container_view, pt);
+  bool is_on_history_button = IsOnHistoryButton(top_container_view, pt);
+
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
@@ -312,6 +314,10 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
+    SendKey(VK_MBUTTON);
+    return 1;
+  } else if (is_on_history_button) {
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     SendKey(VK_MBUTTON);
     return 1;
   }

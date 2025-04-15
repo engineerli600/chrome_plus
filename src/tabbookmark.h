@@ -317,8 +317,13 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_bookmark_history) {
+
+    if ( IsPressed(VK_SHIFT) ) {
+      return 0;
+    }
+    
     ExecuteCommand(IDC_RESTORE_TAB, hwnd);
-    SendKey(VK_MBUTTON);
+    SendKey(VK_LBUTTON);
     return 1;
   }
 

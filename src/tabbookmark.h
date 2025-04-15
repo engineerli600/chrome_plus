@@ -21,6 +21,8 @@
 // 复制网页地址
 #define IDC_COPY_URL 34060
 
+#define IDC_SHOW_HISTORY_SIDE_PANEL 40293
+
 
 
 HHOOK mouse_hook = nullptr;
@@ -317,7 +319,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_bookmark_history) {
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    ExecuteCommand(IDC_SHOW_HISTORY_SIDE_PANEL, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   }

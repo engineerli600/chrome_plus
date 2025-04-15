@@ -299,11 +299,13 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     return 1;
   } else if (is_on_reload_button) {
-    ExecuteCommand(IDC_RESTORE_TAB, hwnd);
-    SendKey(VK_MBUTTON);
+    SendKey(VK_CONTROL, VK_SHIFT, 'T');
+    //ExecuteCommand(IDC_RESTORE_TAB, hwnd);
+    //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_bookmark_button) {
-    SendKey(VK_CONTROL, VK_SHIFT, 'T');
+    ExecuteCommand(IDC_RESTORE_TAB, hwnd);
+    SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
@@ -313,6 +315,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   return 0;
 }
+
+
 
 
 

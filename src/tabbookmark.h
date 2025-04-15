@@ -216,7 +216,6 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   bool is_on_one_tab = IsOnOneTab(top_container_view, pt);
   bool keep_tab = IsNeedKeep(top_container_view);
-  bool is_on_bookmark_history = IsOnBookmarkHistory(hwnd, pt);
 
   if (is_on_one_tab && keep_tab) {
     ExecuteCommand(IDC_NEW_TAB, hwnd);
@@ -281,7 +280,6 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_view_site_info_button = IsOnViewSiteInfoButton(top_container_view, pt);
   bool is_on_extensions_button = IsOnExtensionsButton(top_container_view, pt);
   bool is_on_chromium_button = IsOnChromiumButton(top_container_view, pt);
-  bool is_on_bookmark_history = IsOnBookmarkHistory(hwnd, pt);
 
 
   // 判断是否点击在 新建标签 按钮上
@@ -316,12 +314,29 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
     SendKey(VK_MBUTTON);
     return 1;
-  } else if (is_on_bookmark_history) {
+  }
 
-    if ( IsPressed(VK_SHIFT) ) {
-      return 0;
-    }
-    
+  return 0;
+}
+
+
+// 处理 右键点击 书签上的按钮 的事件
+int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+  if (wParam != WM_RBUTTONUP || IsPressed(VK_SHIFT) ) {
+    return 0;
+  }
+
+  POINT pt = pmouse->pt;
+  HWND hwnd = WindowFromPoint(pt);
+  NodePtr top_container_view = HandleFindBar(hwnd, pt);
+  if (!top_container_view) {
+    return 0;
+  }
+
+
+  bool is_on_bookmark_history = IsOnBookmarkHistory(hwnd, pt);
+
+  if (is_on_bookmark_history) {
     ExecuteCommand(IDC_RESTORE_TAB, hwnd);
     SendKey(VK_LBUTTON);
     return 1;
@@ -410,6 +425,10 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
       return 1;
     }
 
+    // 添加对 HandleRightClickOnBookmarkHistory 函数的调用
+    if (HandleRightClickOnBookmarkHistory(wParam, pmouse) != 0) {
+      return 1;
+    }   
 
     // 添加对 HandleLeftClick 函数的调用
     if (HandleLeftClick(wParam, pmouse) != 0) {

@@ -290,12 +290,11 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    
-    // 打开页面后马上进行其他动作有卡顿，具体现象：打开历史记录页面后，马上进行左键点击动作会无反应。例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
-    // 紧接着发送左键或中键或右键可以解决此问题。
-    // 因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
-    //SendKey(VK_RBUTTON);
-
+    /*     
+    打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
+    紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
+    也欢迎大家提出其他解决方法。
+    */
     SendKey(VK_MBUTTON);
 
     return 1;
@@ -309,11 +308,11 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_extensions_button) {
     ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
-    //SendKey(VK_MBUTTON);
+    SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
-    //SendKey(VK_MBUTTON);
+    SendKey(VK_MBUTTON);
     return 1;
   }
 

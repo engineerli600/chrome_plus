@@ -226,9 +226,6 @@ int HandleMiddleClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // ExecuteCommand(IDC_NEW_TAB, hwnd);
     // ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
     return 1;
-  } else if (is_on_bookmark_history) {
-    // 返回1表示已处理此事件，阻止默认的中键点击行为
-    return 1;
   }
 
   return 0;

@@ -304,11 +304,12 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_bookmark_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    Sleep(50);
     SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
-    //SendKey(VK_MBUTTON);
+    SendKey(VK_MBUTTON);
     return 1;
   }
 
@@ -421,7 +422,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (HandleMiddleClickOnReloadButton(wParam, pmouse) != 0) {
       return 1;
     }
-       
+
     // 添加对 HandleLeftClick 函数的调用
     if (HandleLeftClick(wParam, pmouse) != 0) {
       return 1;

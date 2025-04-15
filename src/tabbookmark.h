@@ -22,7 +22,7 @@
 #define IDC_COPY_URL 34060
 
 #define IDC_RECENT_TABS_MENU 40239
-
+#define IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL 40025
 
 
 HHOOK mouse_hook = nullptr;
@@ -319,7 +319,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_bookmark_history || !IsPressed(VK_SHIFT) ) {
-    ExecuteCommand(IDC_RECENT_TABS_MENU, hwnd);
+    ExecuteCommand(IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   }

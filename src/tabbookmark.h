@@ -21,7 +21,7 @@
 // 复制网页地址
 #define IDC_COPY_URL 34060
 
-#define IDC_SHOW_HISTORY_SIDE_PANEL 40293
+#define IDC_RECENT_TABS_MENU 40239
 
 
 
@@ -318,8 +318,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
     SendKey(VK_MBUTTON);
     return 1;
-  } else if (is_on_bookmark_history) {
-    ExecuteCommand(IDC_SHOW_HISTORY_SIDE_PANEL, hwnd);
+  } else if (is_on_bookmark_history || !IsPressed(VK_SHIFT) ) {
+    ExecuteCommand(IDC_RECENT_TABS_MENU, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   }

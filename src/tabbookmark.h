@@ -277,7 +277,6 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   bool is_on_new_tab_button = IsOnNewTabButton(top_container_view, pt);
   bool is_on_search_tab_button = IsOnSearchTabButton(top_container_view, pt);
-  bool is_on_reload_button = IsOnReloadButton(top_container_view, pt);
   bool is_on_bookmark_button = IsOnBookmarkButton(top_container_view, pt);
   bool is_on_view_site_info_button = IsOnViewSiteInfoButton(top_container_view, pt);
 
@@ -298,11 +297,6 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     SendKey(VK_MBUTTON);
 
     return 1;
-  } else if (is_on_reload_button) {
-    SendKey(VK_CONTROL, VK_SHIFT, 'T');
-    //ExecuteCommand(IDC_RESTORE_TAB, hwnd);
-    //SendKey(VK_MBUTTON);
-    return 1;
   } else if (is_on_bookmark_button) {
     ExecuteCommand(IDC_RESTORE_TAB, hwnd);
     SendKey(VK_MBUTTON);
@@ -315,8 +309,6 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   return 0;
 }
-
-
 
 
 

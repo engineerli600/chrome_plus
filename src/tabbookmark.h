@@ -8,7 +8,8 @@
 
 // 打开历史记录页面
 #define IDC_SHOW_HISTORY 40010
-
+// 打开设置页面
+#define IDC_OPTIONS 40015
 // 打开扩展程序页面
 #define IDC_MANAGE_EXTENSIONS 40022
 // 显示网站二维码

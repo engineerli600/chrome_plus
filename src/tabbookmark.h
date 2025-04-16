@@ -269,10 +269,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   POINT pt = pmouse->pt;
   HWND hwnd = WindowFromPoint(pt);
-  //NodePtr top_container_view = HandleFindBar(hwnd, pt);
-  NodePtr top_container_view = GetTopContainerView(GetFocus());
-
-
+  NodePtr top_container_view = HandleFindBar(hwnd, pt);
   if (!top_container_view) {
     return 0;
   }
@@ -331,16 +328,18 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   POINT pt = pmouse->pt;
   HWND hwnd = WindowFromPoint(pt);
-  NodePtr top_container_view = HandleFindBar(hwnd, pt);
-  if (!top_container_view) {
-    return 0;
-  }
+  NodePtr top_container_view = GetTopContainerView(
+      GetFocus());  // Must use `GetFocus()`, otherwise when opening bookmarks
+                    // in a bookmark folder (and similar expanded menus),
+                    // `top_container_view` cannot be obtained, making it
+                    // impossible to correctly determine `is_on_new_tab`. See
+                    // #98.
 
   bool is_on_bookmark_history = IsOnBookmarkHistory(hwnd, pt);
 
   if (is_on_bookmark_history) {
-    ExecuteCommand(IDC_RESTORE_TAB, hwnd);
-    SendKey(VK_LBUTTON);
+    ExecuteCommand(IDC_OPTIONS, hwnd);
+    //SendKey(VK_LBUTTON);
     return 1;
   }
 

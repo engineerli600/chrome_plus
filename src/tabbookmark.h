@@ -269,7 +269,10 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   POINT pt = pmouse->pt;
   HWND hwnd = WindowFromPoint(pt);
-  NodePtr top_container_view = HandleFindBar(hwnd, pt);
+  //NodePtr top_container_view = HandleFindBar(hwnd, pt);
+  NodePtr top_container_view = GetTopContainerView(GetFocus());
+
+
   if (!top_container_view) {
     return 0;
   }

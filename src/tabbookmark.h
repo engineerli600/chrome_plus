@@ -343,9 +343,13 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 }
 
 
-// 使用消息发送命令，避免焦点问题
-void PostCommandMessage(DWORD command, HWND hwnd) {
-  PostMessage(hwnd, WM_COMMAND, command, 0);
+// 使用键盘快捷键代替命令
+void SimulateHistoryHotkey(HWND hwnd) {
+  // 模拟Ctrl+H打开历史记录
+  keybd_event(VK_CONTROL, 0, 0, 0);
+  keybd_event('H', 0, 0, 0);
+  keybd_event('H', 0, KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
 }
 
 
@@ -365,10 +369,9 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_bookmark_history = IsOnBookmarkHistory(hwnd, pt);
 
   if (is_on_bookmark_history) {
+    
+    SimulateHistoryHotkey(hwnd);
 
-    PostCommandMessage(IDC_SHOW_HISTORY, hwnd);
-
-  
     return 1;
   }
 

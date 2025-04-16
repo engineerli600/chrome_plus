@@ -8,8 +8,7 @@
 
 // 打开历史记录页面
 #define IDC_SHOW_HISTORY 40010
-// 打开设置页面
-#define IDC_OPTIONS 40015
+
 // 打开扩展程序页面
 #define IDC_MANAGE_EXTENSIONS 40022
 // 显示网站二维码
@@ -308,11 +307,11 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_extensions_button) {
     ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
-    SendKey(VK_MBUTTON);
+    //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
-    SendKey(VK_MBUTTON);
+    //SendKey(VK_MBUTTON);
     return 1;
   }
 

@@ -337,16 +337,20 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_bookmark_history) {
 
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-  
-    // 立即向窗口发送失去焦点消息
-    PostMessage(hwnd, WM_KILLFOCUS, 0, 0);
-    
-    // 尝试设置焦点到Chrome_RenderWidgetHostHWND
-    HWND render_hwnd = FindWindowEx(hwnd, NULL, L"Chrome_RenderWidgetHostHWND", NULL);
-    if (render_hwnd) {
-      SetFocus(render_hwnd);
-    }
+    std::thread([hwnd]() {
+      // 执行打开历史记录命令
+      ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+      
+      // 等待一小段时间确保命令已执行
+      Sleep(50);
+      
+      // 方法3: 清除当前所有输入焦点
+      HWND focused_hwnd = GetFocus();
+      if (focused_hwnd) {
+        SetFocus(NULL);
+        SetFocus(hwnd);
+      }
+    }).detach();
 
     return 1;
   }

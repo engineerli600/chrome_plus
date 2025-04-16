@@ -22,6 +22,29 @@
 #define IDC_COPY_URL 34060
 
 
+// 执行命令，并确保不保留焦点
+void ExecuteCommandWithoutFocus(DWORD command, HWND hwnd) {
+  // 先执行命令
+  ExecuteCommand(command, hwnd);
+  
+  // 在新线程中处理焦点问题，避免阻塞UI
+  std::thread([hwnd]() {
+    // 等待命令执行
+    Sleep(10);
+    
+    // 发送ESC键以取消任何可能的焦点
+    keybd_event(VK_ESCAPE, 0, 0, 0);
+    keybd_event(VK_ESCAPE, 0, KEYEVENTF_KEYUP, 0);
+    
+    // 将焦点设置到渲染窗口
+    HWND render_hwnd = FindWindowEx(hwnd, NULL, L"Chrome_RenderWidgetHostHWND", NULL);
+    if (render_hwnd) {
+      SetFocus(render_hwnd);
+    }
+  }).detach();
+}
+
+
 HHOOK mouse_hook = nullptr;
 
 #define KEY_PRESSED 0x8000
@@ -337,22 +360,8 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_bookmark_history) {
 
-    
+    ExecuteCommandWithoutFocus(IDC_SHOW_HISTORY, hwnd);
   
-    // 立即向窗口发送失去焦点消息
-    PostMessage(hwnd, WM_KILLFOCUS, 0, 0);
-
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    
-    // 尝试设置焦点到Chrome_RenderWidgetHostHWND
-    HWND render_hwnd = FindWindowEx(hwnd, NULL, L"Chrome_RenderWidgetHostHWND", NULL);
-    if (render_hwnd) {
-      SetFocus(render_hwnd);
-    }
-
-    
-   
-
     return 1;
   }
 

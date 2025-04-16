@@ -337,20 +337,20 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_bookmark_history) {
 
-    std::thread([hwnd]() {
-      // 执行打开历史记录命令
-      ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-      
-      // 等待一小段时间确保命令已执行
-      Sleep(50);
-      
-      // 方法3: 清除当前所有输入焦点
-      HWND focused_hwnd = GetFocus();
-      if (focused_hwnd) {
-        SetFocus(NULL);
-        SetFocus(hwnd);
-      }
-    }).detach();
+    
+    // 执行打开历史记录命令
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    
+    // 等待一小段时间确保命令已执行
+    Sleep(50);
+    
+    // 方法3: 清除当前所有输入焦点
+    HWND focused_hwnd = GetFocus();
+    if (focused_hwnd) {
+      SetFocus(NULL);
+      SetFocus(hwnd);
+    }
+   
 
     return 1;
   }

@@ -343,6 +343,12 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 }
 
 
+// 使用消息发送命令，避免焦点问题
+void PostCommandMessage(DWORD command, HWND hwnd) {
+  PostMessage(hwnd, WM_COMMAND, command, 0);
+}
+
+
 // 处理 右键点击 书签上的按钮 的事件
 int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_RBUTTONUP) {
@@ -360,7 +366,8 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_bookmark_history) {
 
-    ExecuteCommandWithoutFocus(IDC_SHOW_HISTORY, hwnd);
+    PostCommandMessage(IDC_SHOW_HISTORY, hwnd);
+
   
     return 1;
   }

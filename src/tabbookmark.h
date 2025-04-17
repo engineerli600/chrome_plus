@@ -44,11 +44,14 @@ void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
       SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
       SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
     }
-    
+*/
+
+
     // 尝试方法2: 使用BringWindowToTop和SetActiveWindow
     BringWindowToTop(hwnd);
     SetActiveWindow(hwnd);
-*/    
+ 
+/*    
     // 尝试方法3: 如果有已知的焦点窗口，尝试恢复
     if (focus_window && IsWindow(focus_window)) {
       SetFocus(focus_window);
@@ -56,7 +59,7 @@ void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
 
 
 
-/*     
+    
     // 尝试方法4: 模拟Windows键以重置焦点状态
     keybd_event(VK_LWIN, 0, 0, 0);
     Sleep(10);

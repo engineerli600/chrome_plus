@@ -376,19 +376,10 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_bookmark_history = IsOnBookmarkHistory(hwnd, pt);
 
   if (is_on_bookmark_history) {
-    
+
     //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd);
 
-  
-    // 立即向窗口发送失去焦点消息
-    PostMessage(hwnd, WM_KILLFOCUS, 0, 0);
-    
-    // 尝试设置焦点到Chrome_RenderWidgetHostHWND
-    HWND render_hwnd = FindWindowEx(hwnd, NULL, L"Chrome_RenderWidgetHostHWND", NULL);
-    if (render_hwnd) {
-      SetFocus(render_hwnd);
-    }
     
     return 1;
   }

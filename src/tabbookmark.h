@@ -35,7 +35,8 @@ void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
   std::thread([hwnd, active_window, focus_window, pt]() {
     // 等待命令执行
     Sleep(50);
-    
+
+/*     
     // 尝试方法1: 通过鼠标位置找到窗口并聚焦
     HWND window_at_point = WindowFromPoint(pt);
     if (window_at_point) {
@@ -52,13 +53,17 @@ void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
     if (focus_window && IsWindow(focus_window)) {
       SetFocus(focus_window);
     }
-    
+
+*/ 
+
+/*     
     // 尝试方法4: 模拟Windows键以重置焦点状态
     keybd_event(VK_LWIN, 0, 0, 0);
     Sleep(10);
     keybd_event(VK_LWIN, 0, KEYEVENTF_KEYUP, 0);
     Sleep(10);
-    SetForegroundWindow(hwnd);
+    SetForegroundWindow(hwnd); 
+*/
     
     // 尝试方法5: 使用SwitchToThisWindow API
     SwitchToThisWindow(hwnd, TRUE);
@@ -404,7 +409,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 0;
   }
 
-  if (IsOnBookmarkHistory(hwnd, pt)) {
+  if (IsOnBookmarkHistory(top_container_view, pt)) {
     // 使用新函数代替原来的ExecuteCommand
     ExecuteCommandAndKeepFocusImproved(IDC_SHOW_HISTORY, hwnd, pt);
 

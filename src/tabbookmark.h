@@ -22,27 +22,44 @@
 #define IDC_COPY_URL 34060
 
 
-// 执行命令，并确保不保留焦点
-void ExecuteCommandWithoutFocus(DWORD command, HWND hwnd) {
-  // 先执行命令
+// 执行命令并确保窗口保持焦点
+void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd) {
+  // 保存当前活动窗口
+  HWND active_window = GetForegroundWindow();
+  
+  // 执行命令
   ExecuteCommand(command, hwnd);
   
-  // 在新线程中处理焦点问题，避免阻塞UI
-  std::thread([hwnd]() {
+  // 在新线程中处理焦点问题
+  std::thread([hwnd, active_window]() {
     // 等待命令执行
-    Sleep(10);
+    Sleep(50);
     
-    // 发送ESC键以取消任何可能的焦点
-    keybd_event(VK_ESCAPE, 0, 0, 0);
-    keybd_event(VK_ESCAPE, 0, KEYEVENTF_KEYUP, 0);
-    
-    // 将焦点设置到渲染窗口
-    HWND render_hwnd = FindWindowEx(hwnd, NULL, L"Chrome_RenderWidgetHostHWND", NULL);
-    if (render_hwnd) {
-      SetFocus(render_hwnd);
+    // 确保Chrome窗口是前台窗口
+    if (IsWindow(hwnd) && hwnd != GetForegroundWindow()) {
+      // 获取当前前台窗口线程和Chrome窗口线程
+      DWORD foreground_thread_id = GetWindowThreadProcessId(GetForegroundWindow(), NULL);
+      DWORD chrome_thread_id = GetWindowThreadProcessId(hwnd, NULL);
+      
+      // 连接线程输入状态，这是关键步骤
+      AttachThreadInput(chrome_thread_id, foreground_thread_id, TRUE);
+      
+      // 激活并设置前台窗口
+      SetActiveWindow(hwnd);
+      SetForegroundWindow(hwnd);
+      
+      // 断开线程输入状态连接
+      AttachThreadInput(chrome_thread_id, foreground_thread_id, FALSE);
+      
+      // 再次尝试设置前台窗口
+      SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+      
+      // 发送激活消息
+      SendMessage(hwnd, WM_ACTIVATE, WA_ACTIVE, 0);
     }
   }).detach();
 }
+
 
 
 HHOOK mouse_hook = nullptr;
@@ -343,16 +360,6 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 }
 
 
-// 使用键盘快捷键代替命令
-void SimulateHistoryHotkey(HWND hwnd) {
-  // 模拟Ctrl+H打开历史记录
-  keybd_event(VK_CONTROL, 0, 0, 0);
-  keybd_event('H', 0, 0, 0);
-  keybd_event('H', 0, KEYEVENTF_KEYUP, 0);
-  keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
-}
-
-
 // 处理 右键点击 书签上的按钮 的事件
 int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_RBUTTONUP) {
@@ -370,8 +377,19 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_bookmark_history) {
     
-    SimulateHistoryHotkey(hwnd);
+    //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd);
 
+  
+    // 立即向窗口发送失去焦点消息
+    PostMessage(hwnd, WM_KILLFOCUS, 0, 0);
+    
+    // 尝试设置焦点到Chrome_RenderWidgetHostHWND
+    HWND render_hwnd = FindWindowEx(hwnd, NULL, L"Chrome_RenderWidgetHostHWND", NULL);
+    if (render_hwnd) {
+      SetFocus(render_hwnd);
+    }
+    
     return 1;
   }
 

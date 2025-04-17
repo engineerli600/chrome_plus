@@ -36,7 +36,7 @@ void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
     // 等待命令执行
     Sleep(50);
 
-/*     
+  
     // 尝试方法1: 通过鼠标位置找到窗口并聚焦
     HWND window_at_point = WindowFromPoint(pt);
     if (window_at_point) {
@@ -44,14 +44,14 @@ void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
       SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
       SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
     }
-*/
 
 
+/* 
     // 尝试方法2: 使用BringWindowToTop和SetActiveWindow
     BringWindowToTop(hwnd);
     SetActiveWindow(hwnd);
  
-/*    
+   
     // 尝试方法3: 如果有已知的焦点窗口，尝试恢复
     if (focus_window && IsWindow(focus_window)) {
       SetFocus(focus_window);

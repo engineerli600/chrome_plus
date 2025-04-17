@@ -47,6 +47,7 @@ void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
 
 
 /* 
+
     // 尝试方法2: 使用BringWindowToTop和SetActiveWindow
     BringWindowToTop(hwnd);
     SetActiveWindow(hwnd);

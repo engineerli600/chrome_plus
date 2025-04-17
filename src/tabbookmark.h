@@ -48,13 +48,13 @@ void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
     // 尝试方法2: 使用BringWindowToTop和SetActiveWindow
     BringWindowToTop(hwnd);
     SetActiveWindow(hwnd);
-    
+*/    
     // 尝试方法3: 如果有已知的焦点窗口，尝试恢复
     if (focus_window && IsWindow(focus_window)) {
       SetFocus(focus_window);
     }
 
-*/ 
+
 
 /*     
     // 尝试方法4: 模拟Windows键以重置焦点状态
@@ -63,10 +63,12 @@ void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
     keybd_event(VK_LWIN, 0, KEYEVENTF_KEYUP, 0);
     Sleep(10);
     SetForegroundWindow(hwnd); 
-*/
+
     
     // 尝试方法5: 使用SwitchToThisWindow API
     SwitchToThisWindow(hwnd, TRUE);
+  */
+
   }).detach();
 }
 

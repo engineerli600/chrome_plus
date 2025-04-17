@@ -409,7 +409,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 0;
   }
 
-  if (IsOnBookmarkHistory(NodePtr top_container_view, POINT pt)) {
+  if (IsOnBookmarkHistory(hwnd, pt)) {
     // 使用新函数代替原来的ExecuteCommand
     ExecuteCommandAndKeepFocusImproved(IDC_SHOW_HISTORY, hwnd, pt);
 

@@ -22,41 +22,46 @@
 #define IDC_COPY_URL 34060
 
 
-// 执行命令并确保窗口保持焦点
-void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd) {
-  // 保存当前活动窗口
+// 执行命令并确保窗口保持焦点（改进版）
+void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
+  // 保存当前活动窗口和焦点
   HWND active_window = GetForegroundWindow();
+  HWND focus_window = GetFocus();
   
   // 执行命令
   ExecuteCommand(command, hwnd);
   
   // 在新线程中处理焦点问题
-  std::thread([hwnd, active_window]() {
+  std::thread([hwnd, active_window, focus_window, pt]() {
     // 等待命令执行
     Sleep(50);
     
-    // 确保Chrome窗口是前台窗口
-    if (IsWindow(hwnd) && hwnd != GetForegroundWindow()) {
-      // 获取当前前台窗口线程和Chrome窗口线程
-      DWORD foreground_thread_id = GetWindowThreadProcessId(GetForegroundWindow(), NULL);
-      DWORD chrome_thread_id = GetWindowThreadProcessId(hwnd, NULL);
-      
-      // 连接线程输入状态，这是关键步骤
-      AttachThreadInput(chrome_thread_id, foreground_thread_id, TRUE);
-      
-      // 激活并设置前台窗口
-      SetActiveWindow(hwnd);
-      SetForegroundWindow(hwnd);
-      
-      // 断开线程输入状态连接
-      AttachThreadInput(chrome_thread_id, foreground_thread_id, FALSE);
-      
-      // 再次尝试设置前台窗口
-      SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-      
-      // 发送激活消息
-      SendMessage(hwnd, WM_ACTIVATE, WA_ACTIVE, 0);
+    // 尝试方法1: 通过鼠标位置找到窗口并聚焦
+    HWND window_at_point = WindowFromPoint(pt);
+    if (window_at_point) {
+      // 最简单的方式：发送点击事件给窗口
+      SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
+      SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
     }
+    
+    // 尝试方法2: 使用BringWindowToTop和SetActiveWindow
+    BringWindowToTop(hwnd);
+    SetActiveWindow(hwnd);
+    
+    // 尝试方法3: 如果有已知的焦点窗口，尝试恢复
+    if (focus_window && IsWindow(focus_window)) {
+      SetFocus(focus_window);
+    }
+    
+    // 尝试方法4: 模拟Windows键以重置焦点状态
+    keybd_event(VK_LWIN, 0, 0, 0);
+    Sleep(10);
+    keybd_event(VK_LWIN, 0, KEYEVENTF_KEYUP, 0);
+    Sleep(10);
+    SetForegroundWindow(hwnd);
+    
+    // 尝试方法5: 使用SwitchToThisWindow API
+    SwitchToThisWindow(hwnd, TRUE);
   }).detach();
 }
 
@@ -401,7 +406,8 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (IsOnBookmarkHistory(hwnd, pt)) {
     // 使用新函数代替原来的ExecuteCommand
-    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd);
+    ExecuteCommandAndKeepFocusImproved(IDC_SHOW_HISTORY, hwnd, pt);
+
     return 1;
   }
 

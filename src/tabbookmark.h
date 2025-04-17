@@ -359,7 +359,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   return 0;
 }
 
-
+/* 
 // 处理 右键点击 书签上的按钮 的事件
 int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_RBUTTONUP) {
@@ -376,11 +376,32 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_bookmark_history = IsOnBookmarkHistory(hwnd, pt);
 
   if (is_on_bookmark_history) {
-
     //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd);
+    return 1;
+  }
 
-    
+  return 0;
+}
+
+ */
+
+// 处理 右键点击按钮 的事件
+int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+  if (wParam != WM_RBUTTONUP) {
+    return 0;
+  }
+
+  POINT pt = pmouse->pt;
+  HWND hwnd = WindowFromPoint(pt);
+  NodePtr top_container_view = HandleFindBar(hwnd, pt);
+  if (!top_container_view) {
+    return 0;
+  }
+
+  if (IsOnBookmarkHistory(hwnd, pt)) {
+    // 使用新函数代替原来的ExecuteCommand
+    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd);
     return 1;
   }
 

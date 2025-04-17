@@ -355,19 +355,19 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     return 1;
   } else if (is_on_bookmark_button) {
-    ExecuteCommand(IDC_RESTORE_TAB, hwnd);
-    SendKey(VK_MBUTTON);
+    ExecuteCommandAndKeepFocusImproved(IDC_RESTORE_TAB, hwnd);
+    //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
-    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
-    SendKey(VK_MBUTTON);
+    ExecuteCommandAndKeepFocusImproved(IDC_QRCODE_GENERATOR, hwnd);
+    //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_extensions_button) {
-    ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
+    ExecuteCommandAndKeepFocusImproved(IDC_MANAGE_EXTENSIONS, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
-    ExecuteCommand(IDC_OPTIONS, hwnd);
+    ExecuteCommandAndKeepFocusImproved(IDC_OPTIONS, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   }

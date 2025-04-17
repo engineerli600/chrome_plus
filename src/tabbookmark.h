@@ -22,61 +22,6 @@
 #define IDC_COPY_URL 34060
 
 
-// 执行命令并确保窗口保持焦点（改进版）
-void ExecuteCommandAndKeepFocusImproved(DWORD command, HWND hwnd, POINT pt) {
-  // 保存当前活动窗口和焦点
-  HWND active_window = GetForegroundWindow();
-  HWND focus_window = GetFocus();
-  
-  // 执行命令
-  ExecuteCommand(command, hwnd);
-  
-  // 在新线程中处理焦点问题
-  std::thread([hwnd, active_window, focus_window, pt]() {
-    // 等待命令执行
-    Sleep(50);
-
-  
-    // 尝试方法1: 通过鼠标位置找到窗口并聚焦
-    HWND window_at_point = WindowFromPoint(pt);
-    if (window_at_point) {
-      // 最简单的方式：发送点击事件给窗口
-      SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
-      SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
-    }
-
-
-/* 
-
-    // 尝试方法2: 使用BringWindowToTop和SetActiveWindow
-    BringWindowToTop(hwnd);
-    SetActiveWindow(hwnd);
- 
-   
-    // 尝试方法3: 如果有已知的焦点窗口，尝试恢复
-    if (focus_window && IsWindow(focus_window)) {
-      SetFocus(focus_window);
-    }
-
-
-
-    
-    // 尝试方法4: 模拟Windows键以重置焦点状态
-    keybd_event(VK_LWIN, 0, 0, 0);
-    Sleep(10);
-    keybd_event(VK_LWIN, 0, KEYEVENTF_KEYUP, 0);
-    Sleep(10);
-    SetForegroundWindow(hwnd); 
-
-    
-    // 尝试方法5: 使用SwitchToThisWindow API
-    SwitchToThisWindow(hwnd, TRUE);
-  */
-
-  }).detach();
-}
-
-
 
 HHOOK mouse_hook = nullptr;
 
@@ -84,6 +29,29 @@ HHOOK mouse_hook = nullptr;
 bool IsPressed(int key) {
   return key && (::GetKeyState(key) & KEY_PRESSED) != 0;
 }
+
+
+
+// 执行命令并确保窗口保持焦点
+void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd, POINT pt) {
+  // 执行命令
+  ExecuteCommand(command, hwnd);
+  
+  // 在新线程中处理焦点问题
+  std::thread([pt]() {
+    // 等待命令执行
+    Sleep(50);
+
+    // 通过鼠标位置找到窗口并聚焦
+    HWND window_at_point = WindowFromPoint(pt);
+    if (window_at_point) {
+      // 发送点击事件给窗口
+      SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
+      SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
+    }
+  }).detach();
+}
+
 
 // Compared with `IsOnlyOneTab`, this function additionally implements tick
 // fault tolerance to prevent users from directly closing the window when
@@ -345,29 +313,29 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd);
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
     紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
     也欢迎大家提出其他解决方法。
     */
-    SendKey(VK_MBUTTON);
+    //SendKey(VK_MBUTTON);
 
     return 1;
   } else if (is_on_bookmark_button) {
-    ExecuteCommandAndKeepFocusImproved(IDC_RESTORE_TAB, hwnd);
+    ExecuteCommandAndKeepFocus(IDC_RESTORE_TAB, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
-    ExecuteCommandAndKeepFocusImproved(IDC_QRCODE_GENERATOR, hwnd);
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_extensions_button) {
-    ExecuteCommandAndKeepFocusImproved(IDC_MANAGE_EXTENSIONS, hwnd);
+    ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
-    ExecuteCommandAndKeepFocusImproved(IDC_OPTIONS, hwnd);
+    ExecuteCommand(IDC_OPTIONS, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   }

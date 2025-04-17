@@ -328,15 +328,15 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
-    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    ExecuteCommandAndKeepFocus(IDC_QRCODE_GENERATOR, hwnd, pt);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_extensions_button) {
-    ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
+    ExecuteCommandAndKeepFocus(IDC_MANAGE_EXTENSIONS, hwnd, pt);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
-    ExecuteCommand(IDC_OPTIONS, hwnd);
+    ExecuteCommandAndKeepFocus(IDC_OPTIONS, hwnd, pt);
     //SendKey(VK_MBUTTON);
     return 1;
   }

@@ -313,7 +313,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
-    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd);
+    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);
+
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
     紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
@@ -323,7 +324,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     return 1;
   } else if (is_on_bookmark_button) {
-    ExecuteCommandAndKeepFocus(IDC_RESTORE_TAB, hwnd);
+    ExecuteCommandAndKeepFocus(IDC_QRCODE_GENERATOR, hwnd, pt);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {

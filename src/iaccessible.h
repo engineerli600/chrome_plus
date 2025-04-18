@@ -739,54 +739,72 @@ bool IsOnChromiumButton(NodePtr top_container_view, POINT pt) {
 
 
 // 检测鼠标是否在书签栏里的名称包含 "history" 字样的按钮上
-bool IsOnBookmarkHistory(HWND hwnd, POINT pt) {
+// 检测鼠标是否在书签历史按钮上
+bool IsOnBookmarkHistory(NodePtr top_container_view, POINT pt) {
+  if (!top_container_view) {
+    return false;
+  }
+
   bool flag = false;
-  std::function<bool(NodePtr)> LambdaEnumChild =
-      [&pt, &flag, &LambdaEnumChild](NodePtr child) -> bool {
-    auto role = GetAccessibleRole(child);
-    if (role == ROLE_SYSTEM_PUSHBUTTON || role == ROLE_SYSTEM_MENUITEM) {
-      bool is_in_rect = false;
-      GetAccessibleSize(child, [&is_in_rect, &pt](const RECT& rect) {
-        if (PtInRect(&rect, pt)) {
-          is_in_rect = true;
+  
+  // 首先查找工具栏元素
+  TraversalAccessible(
+      top_container_view,
+      [&pt, &flag](NodePtr toolbar) {
+        // 查找角色为 ROLE_SYSTEM_TOOLBAR 的元素
+        if (GetAccessibleRole(toolbar) == ROLE_SYSTEM_TOOLBAR) {
+          // 在工具栏中查找按钮或菜单项
+          TraversalAccessible(
+              toolbar,
+              [&pt, &flag](NodePtr child) {
+                // 查找角色为 ROLE_SYSTEM_PUSHBUTTON 或 ROLE_SYSTEM_MENUITEM 的元素
+                DWORD role = GetAccessibleRole(child);
+                if (role == ROLE_SYSTEM_PUSHBUTTON || role == ROLE_SYSTEM_MENUITEM) {
+                  bool name_matched = false;
+                  
+                  // 首先检查名称
+                  GetAccessibleName(child, [&name_matched](BSTR bstr) {
+                    if (bstr) {
+                      std::wstring_view bstr_view(bstr);
+                      // 判断名称是否包含 "历史记录" 或 "History" 字样
+                      if (bstr_view.find(L"历史") != std::wstring::npos ||
+                          bstr_view.find(L"History") != std::wstring::npos) {
+                        name_matched = true;
+                      }
+                    }
+                  });
+                  
+                  // 如果通过名称没有找到，尝试检查描述
+                  if (!name_matched) {
+                    GetAccessibleDescription(child, [&name_matched](BSTR desc) {
+                      if (desc) {
+                        std::wstring_view desc_view(desc);
+                        // 判断描述是否包含 "历史记录" 或 "History" 字样
+                        if (desc_view.find(L"历史") != std::wstring::npos ||
+                            desc_view.find(L"History") != std::wstring::npos) {
+                          name_matched = true;
+                        }
+                      }
+                    });
+                  }
+                  
+                  // 如果名称或描述匹配，检查点击位置
+                  if (name_matched) {
+                    GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+                      if (PtInRect(&rect, pt)) {
+                        flag = true;
+                      }
+                    });
+                  }
+                }
+                return flag;  // 如果找到并确认点击位置在按钮上，停止遍历
+              },
+              true);  // 使用 raw_traversal 确保能找到所有元素
         }
-      });
-      if (is_in_rect) {
-        // 检查按钮名称是否包含 "history" 字样
-        GetAccessibleName(child, [&flag](BSTR bstr) {
-          std::wstring_view bstr_view(bstr);
-          // 检查名称中是否包含 "history" 或 "历史" 字样
-          if (bstr_view.find(L"history") != std::wstring_view::npos ||
-              bstr_view.find(L"历史") != std::wstring_view::npos) {
-            flag = true;
-          }
-        });
-        
-        // 如果通过名称没有找到，尝试检查描述
-        if (!flag) {
-          GetAccessibleDescription(child, [&flag](BSTR bstr) {
-            std::wstring_view bstr_view(bstr);
-            // 检查描述中是否包含 "history" 或 "历史" 字样
-            if (bstr_view.find(L"history") != std::wstring_view::npos ||
-                bstr_view.find(L"历史") != std::wstring_view::npos) {
-              flag = true;
-            }
-          });
-        }
-        
-        if (flag) {
-          return true;  // 如果找到匹配项，停止遍历
-        }
-      }
-    }
+        return flag;  // 如果在工具栏中找到目标按钮，停止遍历
+      },
+      true);  // 使用 raw_traversal 确保能找到所有工具栏
 
-    // 遍历子节点
-    TraversalAccessible(child, LambdaEnumChild);
-    return flag;
-  };
-
-  // 开始遍历
-  TraversalAccessible(GetChromeWidgetWin(hwnd), LambdaEnumChild);
   return flag;
 }
 

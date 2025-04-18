@@ -394,15 +394,13 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 0;
   }
 
-  if (IsOnBookmarkHistory(hwnd, pt)) {
+  bool is_on_bookmark_history = IsOnBookmarkHistory(top_container_view, pt);
 
-    //SendKey(VK_CONTROL, 'H');
-    //RestoreFocus(pt);
-    
+  if (is_on_bookmark_history) {
+
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    ExecuteCommand(IDC_FOCUS_THIS_TAB, hwnd);
-
-
+    RestoreFocus(pt);
+    
     return 1;
   }
 

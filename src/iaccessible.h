@@ -765,7 +765,7 @@ bool IsOnBookmarkHistory(NodePtr top_container_view, POINT pt) {
                                      bstr_view.find(L"History") != std::wstring::npos);
               
               // 判断名称是否不包含 "前进" 或 "返回" 字样
-              bool not_contains_navigation = (bstr_view.find(L"前进") == std::wstring::npos ||
+              bool not_contains_navigation = (bstr_view.find(L"前进") == std::wstring::npos &&
                                            bstr_view.find(L"返回") == std::wstring::npos );
               
               // 同时满足两个条件

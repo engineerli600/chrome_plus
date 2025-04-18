@@ -144,8 +144,10 @@ bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
     hwnd = GetTopWnd(hwnd);
     if (zDelta > 0) {
       ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
+      RestoreFocus(pt);
     } else {
       ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
+      RestoreFocus(pt);
     }
     return true;
   }
@@ -155,10 +157,8 @@ bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
     hwnd = GetTopWnd(hwnd);
     if (zDelta > 0) {
       ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
-      RestoreFocus(pt);
     } else {
-      ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
-      RestoreFocus(pt);
+      ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);  
     }
     return true;
   }

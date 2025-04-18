@@ -32,24 +32,18 @@ bool IsPressed(int key) {
 
 
 
-// 改进版恢复窗口焦点函数，可选择性传入坐标
-void RestoreFocus(POINT pt = {0, 0}) {
+// 恢复窗口焦点
+void RestoreFocus(POINT pt) {
   std::thread([pt]() {
-    // 如果pt为{0,0}则获取当前鼠标位置
-    POINT current_pt = pt;
-    if (current_pt.x == 0 && current_pt.y == 0) {
-      GetCursorPos(&current_pt);
-    }
-    
     // 等待命令执行
     Sleep(50);
 
     // 通过鼠标位置找到窗口并聚焦
-    HWND window_at_point = WindowFromPoint(current_pt);
+    HWND window_at_point = WindowFromPoint(pt);
     if (window_at_point) {
       // 发送点击事件给窗口
-      SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(current_pt.x, current_pt.y));
-      SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(current_pt.x, current_pt.y));
+      SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
+      SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
     }
   }).detach();
 }
@@ -225,7 +219,6 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     ExecuteCommand(IDC_NEW_TAB, hwnd);
     ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
     ExecuteCommand(IDC_CLOSE_TAB, hwnd);
-    RestoreFocus(pt);
     
     // ExecuteCommand(IDC_NEW_TAB, hwnd);
     // ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
@@ -233,7 +226,6 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       // Attempt new SendKey function which includes a `dwExtraInfo`
       // value (MAGIC_CODE).
       SendKey(VK_MBUTTON);
-      RestoreFocus(pt);
     }
     return 1;
   }
@@ -308,6 +300,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 0;
   }
 
+  POINT pt = pmouse->pt;
   HWND hwnd = WindowFromPoint(pt);
   NodePtr top_container_view = HandleFindBar(hwnd, pt);
   if (!top_container_view) {
@@ -330,11 +323,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     
-    SendKey(VK_CONTROL, 'H');
-    RestoreFocus();
-
-
-    //ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);
+    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
@@ -407,7 +396,10 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (IsOnBookmarkHistory(hwnd, pt)) {
 
-    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);
+    SendKey(VK_CONTROL, 'H');
+    RestoreFocus(pt);
+
+    //ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);
 
     return 1;
   }

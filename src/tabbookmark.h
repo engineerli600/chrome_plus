@@ -32,12 +32,8 @@ bool IsPressed(int key) {
 
 
 
-// 执行命令并确保窗口保持焦点
-void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd, POINT pt) {
-  // 执行命令
-  ExecuteCommand(command, hwnd);
-  
-  // 在新线程中处理焦点问题
+// 恢复窗口焦点
+void RestoreFocus(POINT pt) {
   std::thread([pt]() {
     // 等待命令执行
     Sleep(50);
@@ -51,6 +47,19 @@ void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd, POINT pt) {
     }
   }).detach();
 }
+
+
+// 执行命令并确保窗口保持焦点
+void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd, POINT pt) {
+  // 执行命令
+  ExecuteCommand(command, hwnd);
+  
+  // 恢复焦点
+  RestoreFocus(pt);
+}
+
+
+
 
 
 // Compared with `IsOnlyOneTab`, this function additionally implements tick
@@ -146,8 +155,10 @@ bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
     hwnd = GetTopWnd(hwnd);
     if (zDelta > 0) {
       ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
+      RestoreFocus(pt);
     } else {
       ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
+      RestoreFocus(pt);
     }
     return true;
   }
@@ -210,6 +221,7 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     ExecuteCommand(IDC_NEW_TAB, hwnd);
     ExecuteCommand(IDC_SELECT_PREVIOUS_TAB , hwnd);
     ExecuteCommand(IDC_CLOSE_TAB, hwnd);
+    RestoreFocus(pt);
     
     // ExecuteCommand(IDC_NEW_TAB, hwnd);
     // ExecuteCommand(IDC_WINDOW_CLOSE_OTHER_TABS, hwnd);
@@ -217,6 +229,7 @@ int HandleRightClick(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       // Attempt new SendKey function which includes a `dwExtraInfo`
       // value (MAGIC_CODE).
       SendKey(VK_MBUTTON);
+      RestoreFocus(pt);
     }
     return 1;
   }
@@ -313,7 +326,12 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
-    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);
+    
+    SendKey(VK_CONTROL, 'H');
+    RestoreFocus(pt);
+
+
+    //ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

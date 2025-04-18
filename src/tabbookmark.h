@@ -381,7 +381,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
  */
 
-// 处理 右键点击按钮 的事件
+// 处理 右键点击书签栏上的里history按钮 的事件
 int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_RBUTTONUP) {
     return 0;
@@ -399,7 +399,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //SendKey(VK_CONTROL, 'H');
     //RestoreFocus(pt);
 
-    ExecuteCommandAndKeepFocus(IDC_TAKE_SCREENSHOT, hwnd, pt);
+    ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
 
     return 1;
   }

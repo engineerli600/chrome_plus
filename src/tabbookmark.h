@@ -132,7 +132,8 @@ bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
       (!config.is_wheel_tab && !config.is_wheel_tab_when_press_right_button)) {
     return false;
   }
-
+  
+  POINT pt = pmouse->pt;
   HWND hwnd = GetFocus();
   NodePtr top_container_view = GetTopContainerView(hwnd);
 

@@ -19,7 +19,7 @@
 
 #define IDC_RELOAD_CLEARING_CACHE 33009
 #define IDC_COPY_URL 34060
-#define IDC_TAKE_SCREENSHOT 40248
+#define IDC_FOCUS_THIS_TAB 35017
 
 
 
@@ -398,8 +398,10 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     //SendKey(VK_CONTROL, 'H');
     //RestoreFocus(pt);
+    
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    ExecuteCommand(IDC_FOCUS_THIS_TAB, hwnd);
 
-    ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
 
     return 1;
   }

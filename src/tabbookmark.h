@@ -16,10 +16,10 @@
 #define IDC_QRCODE_GENERATOR 35021
 // 重新打开先前关闭的标签页
 #define IDC_RESTORE_TAB 34028
-// 清空缓存并重新加载
+
 #define IDC_RELOAD_CLEARING_CACHE 33009
-// 复制网页地址
 #define IDC_COPY_URL 34060
+#define IDC_TAKE_SCREENSHOT 40248
 
 
 
@@ -396,10 +396,10 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (IsOnBookmarkHistory(hwnd, pt)) {
 
-    SendKey(VK_CONTROL, 'H');
-    RestoreFocus(pt);
+    //SendKey(VK_CONTROL, 'H');
+    //RestoreFocus(pt);
 
-    //ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);
+    ExecuteCommandAndKeepFocus(IDC_TAKE_SCREENSHOT, hwnd, pt);
 
     return 1;
   }

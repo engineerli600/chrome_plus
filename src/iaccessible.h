@@ -765,12 +765,8 @@ bool IsOnBookmarkHistory(NodePtr top_container_view, POINT pt) {
                                      bstr_view.find(L"History") != std::wstring::npos);
               
               // 判断名称是否不包含 "前进" 或 "返回" 字样
-              bool not_contains_navigation = (bstr_view.find(L"前进") == std::wstring::npos &&
-                                           bstr_view.find(L"返回") == std::wstring::npos &&
-                                           bstr_view.find(L"back") == std::wstring::npos &&
-                                           bstr_view.find(L"forward") == std::wstring::npos &&
-                                           bstr_view.find(L"Back") == std::wstring::npos &&
-                                           bstr_view.find(L"Forward") == std::wstring::npos);
+              bool not_contains_navigation = (bstr_view.find(L"前进") == std::wstring::npos ||
+                                           bstr_view.find(L"返回") == std::wstring::npos );
               
               // 同时满足两个条件
               if (contains_history && not_contains_navigation) {
@@ -784,22 +780,10 @@ bool IsOnBookmarkHistory(NodePtr top_container_view, POINT pt) {
             GetAccessibleDescription(child, [&element_matched](BSTR desc) {
               if (desc) {
                 std::wstring_view desc_view(desc);
-                // 判断描述是否包含 "历史记录" 或 "history" 字样
-                bool contains_history = (desc_view.find(L"历史") != std::wstring::npos ||
-                                       desc_view.find(L"history") != std::wstring::npos ||
-                                       desc_view.find(L"History") != std::wstring::npos);
-                
-                // 判断描述是否不包含 "前进" 或 "返回" 字样
-                bool not_contains_navigation = (desc_view.find(L"前进") == std::wstring::npos &&
-                                             desc_view.find(L"返回") == std::wstring::npos &&
-                                             desc_view.find(L"back") == std::wstring::npos &&
-                                             desc_view.find(L"forward") == std::wstring::npos &&
-                                             desc_view.find(L"Back") == std::wstring::npos &&
-                                             desc_view.find(L"Forward") == std::wstring::npos);
-                
-                // 同时满足两个条件
-                if (contains_history && not_contains_navigation) {
-                  element_matched = true;
+                // 判断描述是否包含 "历史记录" 或 "History" 字样
+                if (desc_view.find(L"历史") != std::wstring::npos ||
+                    desc_view.find(L"History") != std::wstring::npos) {
+                    element_matched = true;
                 }
               }
             });

@@ -32,18 +32,24 @@ bool IsPressed(int key) {
 
 
 
-// 恢复窗口焦点
-void RestoreFocus(POINT pt) {
+// 改进版恢复窗口焦点函数，可选择性传入坐标
+void RestoreFocus(POINT pt = {0, 0}) {
   std::thread([pt]() {
+    // 如果pt为{0,0}则获取当前鼠标位置
+    POINT current_pt = pt;
+    if (current_pt.x == 0 && current_pt.y == 0) {
+      GetCursorPos(&current_pt);
+    }
+    
     // 等待命令执行
     Sleep(50);
 
     // 通过鼠标位置找到窗口并聚焦
-    HWND window_at_point = WindowFromPoint(pt);
+    HWND window_at_point = WindowFromPoint(current_pt);
     if (window_at_point) {
       // 发送点击事件给窗口
-      SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
-      SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
+      SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(current_pt.x, current_pt.y));
+      SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(current_pt.x, current_pt.y));
     }
   }).detach();
 }
@@ -132,8 +138,7 @@ bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
       (!config.is_wheel_tab && !config.is_wheel_tab_when_press_right_button)) {
     return false;
   }
-  
-  POINT pt = pmouse->pt;
+
   HWND hwnd = GetFocus();
   NodePtr top_container_view = GetTopContainerView(hwnd);
 
@@ -145,10 +150,8 @@ bool HandleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse) {
     hwnd = GetTopWnd(hwnd);
     if (zDelta > 0) {
       ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
-      RestoreFocus(pt);
     } else {
       ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
-      RestoreFocus(pt);
     }
     return true;
   }
@@ -305,7 +308,6 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 0;
   }
 
-  POINT pt = pmouse->pt;
   HWND hwnd = WindowFromPoint(pt);
   NodePtr top_container_view = HandleFindBar(hwnd, pt);
   if (!top_container_view) {
@@ -329,7 +331,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   } else if (is_on_search_tab_button) {
     
     SendKey(VK_CONTROL, 'H');
-    RestoreFocus(pt);
+    RestoreFocus();
 
 
     //ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);

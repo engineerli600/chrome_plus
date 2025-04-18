@@ -760,18 +760,12 @@ bool IsOnBookmarkHistory(NodePtr top_container_view, POINT pt) {
             if (bstr) {
               std::wstring_view bstr_view(bstr);
               // 判断名称是否包含 "历史记录" 或 "history" 字样
-              bool contains_history = (bstr_view.find(L"历史") != std::wstring::npos ||
-                                     bstr_view.find(L"history") != std::wstring::npos ||
-                                     bstr_view.find(L"History") != std::wstring::npos);
-              
-              // 判断名称是否不包含 "前进" 或 "返回" 字样
-              bool not_contains_navigation = (bstr_view.find(L"前进") == std::wstring::npos &&
-                                           bstr_view.find(L"返回") == std::wstring::npos );
-              
-              // 同时满足两个条件
-              if (contains_history && not_contains_navigation) {
+              if (bstr_view.find(L"历史") != std::wstring::npos ||
+                  bstr_view.find(L"History") != std::wstring::npos  && 
+                  bstr_view.find(L"前进") == std::wstring::npos ) {
                 element_matched = true;
               }
+
             }
           });
           

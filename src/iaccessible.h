@@ -738,7 +738,6 @@ bool IsOnChromiumButton(NodePtr top_container_view, POINT pt) {
 }
 
 
-// 检测鼠标是否在书签栏里的名称包含 "history" 字样的按钮上
 // 检测鼠标是否在历史记录按钮上
 bool IsOnBookmarkHistory(NodePtr top_container_view, POINT pt) {
   if (!top_container_view) {
@@ -746,48 +745,38 @@ bool IsOnBookmarkHistory(NodePtr top_container_view, POINT pt) {
   }
 
   bool flag = false;
-  // 直接遍历 top_container_view 的子元素
+  // 遍历 top_container_view 的子元素
   TraversalAccessible(
       top_container_view,
       [&pt, &flag](NodePtr child) {
-        // 查找角色为 ROLE_SYSTEM_PUSHBUTTON 或 ROLE_SYSTEM_MENUITEM 的元素
+        // 检查角色是否为按钮类型
         DWORD role = GetAccessibleRole(child);
-        if (role == ROLE_SYSTEM_PUSHBUTTON || role == ROLE_SYSTEM_MENUITEM) {
-          bool element_matched = false;
+        if (role == ROLE_SYSTEM_PUSHBUTTON) {
           
-          // 检查元素名称
-          GetAccessibleName(child, [&element_matched](BSTR bstr) {
-            if (bstr) {
-              std::wstring_view bstr_view(bstr);
-              // 判断名称是否包含 "历史记录" 或 "history" 字样
-              if (bstr_view.find(L"历史") != std::wstring::npos ||
-                  bstr_view.find(L"History") != std::wstring::npos  && 
-                  bstr_view.find(L"前进") == std::wstring::npos ) {
-                element_matched = true;
-              }
-
+          // 用于检查名称是否匹配的标志
+          bool name_match = false;
+          
+          // 首先检查名称
+          GetAccessibleName(child, [&name_match](BSTR bstr) {
+            std::wstring_view bstr_view(bstr);
+            // 判断名称是否包含"历史"字样
+            if (bstr_view.find(L"历史") != std::wstring::npos) {
+              name_match = true;
             }
           });
           
-          // 如果通过名称没有找到，尝试检查描述
-          if (!element_matched) {
-            GetAccessibleDescription(child, [&element_matched](BSTR desc) {
-              if (desc) {
-                std::wstring_view desc_view(desc);
-                // 判断描述是否包含 "历史记录" 或 "History" 字样
-                if (desc_view.find(L"历史") != std::wstring::npos ||
-                    desc_view.find(L"History") != std::wstring::npos) {
-                    element_matched = true;
-                }
-              }
-            });
-          }
-          
-          // 如果元素匹配，检查点击位置
-          if (element_matched) {
-            GetAccessibleSize(child, [&flag, &pt](RECT rect) {
-              if (PtInRect(&rect, pt)) {
-                flag = true;
+          // 如果名称匹配，继续检查描述
+          if (name_match) {
+            GetAccessibleDescription(child, [&flag, &child, &pt](BSTR desc) {
+              std::wstring_view desc_view(desc);
+              // 判断描述是否包含"历史"字样
+              if (desc_view.find(L"历史") != std::wstring::npos) {
+                // 名称和描述都匹配，获取按钮区域并检查点击位置
+                GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+                  if (PtInRect(&rect, pt)) {
+                    flag = true;
+                  }
+                });
               }
             });
           }

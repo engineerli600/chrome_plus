@@ -800,4 +800,55 @@ bool IsOnBookmarkHistory(NodePtr top_container_view, POINT pt) {
 }
 
 
+// 检测鼠标是否在"测试"按钮上 (名称和描述都必须包含"测试")
+bool IsOnTestButton(NodePtr top_container_view, POINT pt) {
+  if (!top_container_view) {
+    return false;
+  }
+
+  bool flag = false;
+  // 遍历 top_container_view 的子元素
+  TraversalAccessible(
+      top_container_view,
+      [&pt, &flag](NodePtr child) {
+        // 检查角色是否为按钮类型
+        DWORD role = GetAccessibleRole(child);
+        if (role == ROLE_SYSTEM_PUSHBUTTON) {
+          
+          // 用于检查名称是否匹配的标志
+          bool name_match = false;
+          
+          // 首先检查名称
+          GetAccessibleName(child, [&name_match](BSTR bstr) {
+            std::wstring_view bstr_view(bstr);
+            // 判断名称是否包含"测试"字样
+            if (bstr_view.find(L"测试") != std::wstring::npos) {
+              name_match = true;
+            }
+          });
+          
+          // 如果名称匹配，继续检查描述
+          if (name_match) {
+            GetAccessibleDescription(child, [&flag, &child, &pt](BSTR desc) {
+              std::wstring_view desc_view(desc);
+              // 判断描述是否包含"测试"字样
+              if (desc_view.find(L"测试") != std::wstring::npos) {
+                // 名称和描述都匹配，获取按钮区域并检查点击位置
+                GetAccessibleSize(child, [&flag, &pt](RECT rect) {
+                  if (PtInRect(&rect, pt)) {
+                    flag = true;
+                  }
+                });
+              }
+            });
+          }
+        }
+        return flag;  // 如果找到并确认点击位置在按钮上，停止遍历
+      },
+      true);  // 使用 raw_traversal 确保能找到所有元素
+
+  return flag;
+}
+
+
 #endif  // IACCESSIBLE_H_

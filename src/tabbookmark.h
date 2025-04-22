@@ -20,6 +20,7 @@
 #define IDC_RELOAD_CLEARING_CACHE 33009
 #define IDC_COPY_URL 34060
 #define IDC_FOCUS_THIS_TAB 35017
+#define IDC_ALL_WINDOWS_FRONT 34048
 
 
 
@@ -399,7 +400,9 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_bookmark_history) {
 
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    RestoreFocus(pt);
+    ExecuteCommand(IDC_ALL_WINDOWS_FRONT, hwnd);
+    
+    //RestoreFocus(pt);
     
     return 1;
   }

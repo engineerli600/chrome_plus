@@ -399,10 +399,8 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_bookmark_history) {
 
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    ExecuteCommand(IDC_ALL_WINDOWS_FRONT, hwnd);
-    
-    //RestoreFocus(pt);
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);  
+    RestoreFocus(pt);
     
     return 1;
   }

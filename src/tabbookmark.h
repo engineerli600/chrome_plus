@@ -22,6 +22,7 @@
 #define IDC_FOCUS_THIS_TAB 35017
 #define IDC_ALL_WINDOWS_FRONT 34048
 #define IDC_SHARING_HUB_SCREENSHOT 35031
+#define IDC_TAKE_SCREENSHOT 40248
 
 
 
@@ -385,7 +386,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理 右键点击书签栏上的里history按钮 的事件
 int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if (wParam != WM_RBUTTONUP) {
+  if (wParam != WM_RBUTTONUP || (::GetKeyState(VK_SHIFT) & 0x8000) != 0 ) {
     return 0;
   }
 
@@ -399,7 +400,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_bookmark_history = IsOnBookmarkHistory(top_container_view, pt);
 
   if (is_on_bookmark_history) {
-    ExecuteCommand(IDC_SHARING_HUB_SCREENSHOT, hwnd);
+    ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
 
     //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     //RestoreFocus(pt);

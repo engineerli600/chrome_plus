@@ -400,10 +400,10 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_bookmark_history = IsOnBookmarkHistory(top_container_view, pt);
 
   if (is_on_bookmark_history) {
-    ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
+    //ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
 
-    //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    //RestoreFocus(pt);
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    RestoreFocus(pt);
     
     return 1;
   }

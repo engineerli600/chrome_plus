@@ -22,7 +22,7 @@
 #define IDC_FOCUS_THIS_TAB 35017
 #define IDC_ALL_WINDOWS_FRONT 34048
 #define IDC_SHARING_HUB_SCREENSHOT 35031
-#define IDC_TAKE_SCREENSHOT 40248
+#define IDC_BOOKMARKS_MENU 40029
 
 
 
@@ -403,7 +403,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_bookmark_history) {
     //ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
 
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    ExecuteCommand(IDC_BOOKMARKS_MENU, hwnd);
     RestoreFocus(pt);
     
     return 1;
@@ -453,11 +453,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
   }
 
-  // 按住Shift时右键直接传递给下一个钩子
-  if (wParam == WM_RBUTTONUP && IsPressed(VK_SHIFT)) {
-    return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
-  }
-
+  
   do {
     if (wParam == WM_MOUSEMOVE || wParam == WM_NCMOUSEMOVE) {
       break;
@@ -498,7 +494,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     }
 
     // 修改这里，确保Shift+右键时不会被HandleRightClick拦截
-    if (!IsPressed(VK_SHIFT) && HandleRightClickOnBookmarkHistory(wParam, pmouse) != 0) {
+    if (HandleRightClickOnBookmarkHistory(wParam, pmouse) != 0) {
       return 1;
     } 
 

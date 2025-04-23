@@ -386,7 +386,12 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理 右键点击书签栏上的里history按钮 的事件
 int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  if (wParam != WM_RBUTTONUP || (::GetKeyState(VK_SHIFT) & 0x8000) != 0 ) {
+  // 如果按住Shift键，直接传递给下一个钩子
+  if (wParam == WM_RBUTTONUP && ((::GetKeyState(VK_SHIFT) & 0x8000) != 0)) {
+    return CallNextHookEx(mouse_hook, HC_ACTION, wParam, (LPARAM)pmouse);
+  }
+
+  if (wParam != WM_RBUTTONUP) {
     return 0;
   }
 

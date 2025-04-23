@@ -386,14 +386,10 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理 右键点击书签栏上的里history按钮 的事件
 int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  // 如果按住Shift键，直接传递给下一个钩子
-  if (wParam == WM_RBUTTONUP && ((::GetKeyState(VK_SHIFT) & 0x8000) != 0)) {
-    return CallNextHookEx(mouse_hook, HC_ACTION, wParam, (LPARAM)pmouse);
-  }
-
-  if (wParam != WM_RBUTTONUP) {
+  if (wParam != WM_RBUTTONUP || IsPressed(VK_SHIFT)) {
     return 0;
   }
+  
 
   POINT pt = pmouse->pt;
   HWND hwnd = WindowFromPoint(pt);
@@ -457,6 +453,11 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
   }
 
+  // 按住Shift时右键直接传递给下一个钩子
+  if (wParam == WM_RBUTTONUP && IsPressed(VK_SHIFT)) {
+    return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
+  }
+
   do {
     if (wParam == WM_MOUSEMOVE || wParam == WM_NCMOUSEMOVE) {
       break;
@@ -496,10 +497,10 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
       return 1;
     }
 
-    // 添加对 HandleRightClickOnBookmarkHistory 函数的调用
-    if (HandleRightClickOnBookmarkHistory(wParam, pmouse) != 0) {
+    // 修改这里，确保Shift+右键时不会被HandleRightClick拦截
+    if (!IsPressed(VK_SHIFT) && HandleRightClick(wParam, pmouse) != 0) {
       return 1;
-    }   
+    } 
 
     // 添加对 HandleLeftClick 函数的调用
     if (HandleLeftClick(wParam, pmouse) != 0) {

@@ -498,7 +498,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     }
 
     // 修改这里，确保Shift+右键时不会被HandleRightClick拦截
-    if (!IsPressed(VK_SHIFT) && HandleRightClick(wParam, pmouse) != 0) {
+    if (!IsPressed(VK_SHIFT) && HandleRightClickOnBookmarkHistory(wParam, pmouse) != 0) {
       return 1;
     } 
 

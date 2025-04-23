@@ -22,7 +22,7 @@
 #define IDC_FOCUS_THIS_TAB 35017
 #define IDC_ALL_WINDOWS_FRONT 34048
 #define IDC_SHARING_HUB_SCREENSHOT 35031
-#define IDC_BOOKMARKS_MENU 40029
+#define IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS 51016
 
 
 
@@ -403,8 +403,8 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_bookmark_history) {
     //ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
 
-    ExecuteCommand(IDC_BOOKMARKS_MENU, hwnd);
-    RestoreFocus(pt);
+    ExecuteCommand(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS, hwnd);
+    //RestoreFocus(pt);
     
     return 1;
   }

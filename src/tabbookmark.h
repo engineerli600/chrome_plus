@@ -22,7 +22,7 @@
 #define IDC_FOCUS_THIS_TAB 35017
 #define IDC_ALL_WINDOWS_FRONT 34048
 #define IDC_SHARING_HUB_SCREENSHOT 35031
-#define IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS 51016
+#define IDC_BOOKMARKS_MENU 40029
 
 
 
@@ -386,6 +386,22 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
 // 处理 右键点击书签栏上的里history按钮 的事件
 int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+  // 如果是右键点击并且按住了Shift键
+  if (wParam == WM_RBUTTONUP && ((::GetKeyState(VK_SHIFT) & 0x8000) != 0)) {
+    POINT pt = pmouse->pt;
+    HWND hwnd = WindowFromPoint(pt);
+    
+    // 将坐标转换为客户区坐标
+    POINT client_pt = pt;
+    ScreenToClient(hwnd, &client_pt);
+    
+    // 显式发送WM_CONTEXTMENU消息显示上下文菜单
+    SendMessage(hwnd, WM_CONTEXTMENU, (WPARAM)hwnd, MAKELPARAM(pt.x, pt.y));
+    return 1; // 表示已处理
+  }
+
+
+
   if (wParam != WM_RBUTTONUP) {
     return 0;
   }
@@ -403,8 +419,8 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_bookmark_history) {
     //ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
 
-    ExecuteCommand(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS, hwnd);
-    //RestoreFocus(pt);
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    RestoreFocus(pt);
     
     return 1;
   }

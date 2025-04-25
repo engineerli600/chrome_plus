@@ -839,5 +839,36 @@ bool IsOnTestButton(NodePtr top_container_view, POINT pt) {
   return flag;
 }
 
+// 隐藏搜索标签页按钮
+void HideSearchTabButtonByAccessibility() {
+  // 获取顶层容器视图
+  NodePtr top_container_view = GetTopContainerView(GetForegroundWindow());
+  if (!top_container_view) return;
+  
+  // 查找搜索标签页按钮
+  TraversalAccessible(
+    top_container_view,
+    [](NodePtr child) {
+      if (GetAccessibleRole(child) == ROLE_SYSTEM_BUTTONMENU) {
+        GetAccessibleName(child, [child](BSTR bstr) {
+          std::wstring_view bstr_view(bstr);
+          if (bstr_view.find(L"搜索标签页") != std::wstring::npos ||
+              bstr_view.find(L"Search tabs") != std::wstring::npos) {
+            
+            // 尝试隐藏按钮或设置其状态为不可见
+            VARIANT state;
+            state.vt = VT_I4;
+            state.lVal = STATE_SYSTEM_INVISIBLE;
+            child->put_accState(self, state);
+            
+            // 或者尝试设置其CSS样式
+            // 这需要通过其他方式实现
+          }
+        });
+      }
+      return false;
+    },
+    true);
+}
 
 #endif  // IACCESSIBLE_H_

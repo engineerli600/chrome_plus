@@ -801,8 +801,7 @@ bool IsOnTestButton(NodePtr top_container_view, POINT pt) {
       top_container_view,
       [&pt, &flag](NodePtr child) {
         // 检查角色是否为按钮类型
-        DWORD role = GetAccessibleRole(child);
-        if (role == ROLE_SYSTEM_PUSHBUTTON) {
+        if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON) {
           
           // 用于检查名称是否匹配的标志
           bool name_match = false;

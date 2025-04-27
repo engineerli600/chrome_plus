@@ -384,23 +384,33 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
  */
 
-// 处理 右键点击书签栏上的里history按钮 的事件
-int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
-  // 如果是右键点击并且按住了Shift键
-  if (wParam == WM_RBUTTONUP && ((::GetKeyState(VK_SHIFT) & 0x8000) != 0)) {
-    POINT pt = pmouse->pt;
-    HWND hwnd = WindowFromPoint(pt);
-    
-    // 将坐标转换为客户区坐标
-    POINT client_pt = pt;
-    ScreenToClient(hwnd, &client_pt);
-    
-    // 显式发送WM_CONTEXTMENU消息显示上下文菜单
-    SendMessage(hwnd, WM_CONTEXTMENU, (WPARAM)hwnd, MAKELPARAM(pt.x, pt.y));
-    return 1; // 表示已处理
+// 处理右键点击新建标签按钮的事件
+int HandleRightClickOnTestButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
+  if (wParam != WM_RBUTTONUP) {
+    return 0;
   }
 
+  POINT pt = pmouse->pt;
+  HWND hwnd = WindowFromPoint(pt);
+  NodePtr top_container_view = HandleFindBar(hwnd, pt);
+  if (!top_container_view) {
+    return 0;
+  }
 
+  bool is_on_test_button = IsOnTestButton(top_container_view, pt);
+
+  if (is_on_test_button) {
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    RestoreFocus(pt);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+// 处理 右键点击书签栏上的里history按钮 的事件
+int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (wParam != WM_RBUTTONUP) {
     return 0;
@@ -427,6 +437,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   return 0;
 }
+
 
 
 
@@ -513,6 +524,11 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (HandleRightClickOnBookmarkHistory(wParam, pmouse) != 0) {
       return 1;
     } 
+
+    // 添加对 HandleRightClickOnTestButton 函数的调用
+    if (HandleRightClickOnTestButton(wParam, pmouse) != 0) {
+      return 1;
+    }
 
     // 添加对 HandleLeftClick 函数的调用
     if (HandleLeftClick(wParam, pmouse) != 0) {

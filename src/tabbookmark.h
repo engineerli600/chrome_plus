@@ -337,19 +337,19 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
     return 1;
   } else if (is_on_bookmark_button) {
-    ExecuteCommandAndKeepFocus(IDC_QRCODE_GENERATOR, hwnd, pt);
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
-    ExecuteCommandAndKeepFocus(IDC_QRCODE_GENERATOR, hwnd, pt);
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_extensions_button) {
-    ExecuteCommandAndKeepFocus(IDC_MANAGE_EXTENSIONS, hwnd, pt);
+    ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
-    ExecuteCommandAndKeepFocus(IDC_OPTIONS, hwnd, pt);
+    ExecuteCommand(IDC_OPTIONS, hwnd);
     //SendKey(VK_MBUTTON);
     return 1;
   }
@@ -401,7 +401,7 @@ int HandleRightClickOnTestButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_test_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    RestoreFocus(pt);
+    //RestoreFocus(pt);
     return 1;
   }
 

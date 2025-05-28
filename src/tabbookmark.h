@@ -16,6 +16,8 @@
 #define IDC_QRCODE_GENERATOR 35021
 // 重新打开先前关闭的标签页
 #define IDC_RESTORE_TAB 34028
+// 显示最近关闭的标签页菜单
+#define IDC_RECENT_TABS_MENU 40030
 
 #define IDC_RELOAD_CLEARING_CACHE 33009
 #define IDC_COPY_URL 34060
@@ -341,7 +343,10 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
-    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    //ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    ExecuteCommand(IDC_RECENT_TABS_MENU, hwnd);
+    SendMessage(hwnd, WM_MBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
+
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_extensions_button) {

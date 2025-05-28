@@ -328,8 +328,9 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
-    
-    ExecuteCommandAndKeepFocus(IDC_SHOW_HISTORY, hwnd, pt);
+
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    SendMessage(hwnd, WM_LBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
@@ -344,8 +345,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
-    //ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
-    ExecuteCommand(IDC_RECENT_TABS_MENU, hwnd);
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
     SendMessage(hwnd, WM_MBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
 
     //SendKey(VK_MBUTTON);

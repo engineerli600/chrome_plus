@@ -320,8 +320,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
-    // 在原版chrome上，在该按钮上点击中键可以新建标签页并执行粘贴并转到/搜索的功能。
-    SendKey(VK_MBUTTON);
+    // 配合 粘贴并搜索 扩展
+    SendKey(VK_CONTROL, VK_SHIFT, 'V');
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
@@ -346,6 +346,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_extensions_button) {
     ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
+    SendMessage(hwnd, WM_MBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {

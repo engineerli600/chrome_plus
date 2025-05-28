@@ -37,7 +37,6 @@ bool IsPressed(int key) {
 }
 
 
-
 // 恢复窗口焦点
 void RestoreFocus(POINT pt) {
   std::thread([pt]() {
@@ -325,6 +324,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_new_tab_button) {
     // 配合 粘贴并搜索 扩展
     SendKey(VK_CONTROL, VK_SHIFT, 'V');
+    Sleep(200);
     SendMessage(hwnd, WM_MBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
 
     return 1;

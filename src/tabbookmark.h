@@ -54,8 +54,21 @@ void EnsureFocusAfterCommand(HWND hwnd) {
 }
 
 
+void RestoreFocus(HWND hwnd) {
+    // 确保窗口可见
+    ShowWindow(hwnd, SW_SHOW);
+    
+    // 将窗口置于前台
+    SetForegroundWindow(hwnd);
+    
+    // 激活窗口
+    SetActiveWindow(hwnd);
+    
+    // 设置焦点
+    SetFocus(hwnd);
+}
 
-void RestoreFocus(POINT pt) {
+/* void RestoreFocus(POINT pt) {
   std::thread([pt]() {
     // 等待命令执行
     Sleep(50);
@@ -69,7 +82,7 @@ void RestoreFocus(POINT pt) {
     }
   }).detach();
 }
-
+ */
 
 // 执行命令并确保窗口保持焦点
 void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd, POINT pt) {
@@ -348,7 +361,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   } else if (is_on_search_tab_button) {
 
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    EnsureFocusAfterCommand(hwnd);  // 添加这行
+    Sleep(50);
+    RestoreFocus(hwnd);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

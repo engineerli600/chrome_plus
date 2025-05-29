@@ -55,6 +55,7 @@ void EnsureFocusAfterCommand(HWND hwnd) {
 
 
 void RestoreFocus(HWND hwnd) {
+    HWND hwnd = WindowFromPoint(pt);
     // 确保窗口可见
     ShowWindow(hwnd, SW_SHOW);
     

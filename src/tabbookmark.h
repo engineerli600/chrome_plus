@@ -17,9 +17,6 @@
 // 重新打开先前关闭的标签页
 #define IDC_RESTORE_TAB 34028
 
-// 显示最近关闭的标签页菜单
-#define IDC_RECENT_TABS_MENU 40239
-
 #define IDC_RELOAD_CLEARING_CACHE 33009
 #define IDC_COPY_URL 34060
 #define IDC_FOCUS_THIS_TAB 35017
@@ -37,25 +34,7 @@ bool IsPressed(int key) {
 }
 
 
-void EnsureFocusAfterCommand(HWND hwnd) {
-    // 延迟一点让命令执行完成
-    Sleep(100);
-    
-    // 方法1：尝试简单恢复焦点
-    SetForegroundWindow(hwnd);
-    SetActiveWindow(hwnd);
-    
-    // 方法2：如果简单方法不够，发送激活消息
-    SendMessage(hwnd, WM_ACTIVATE, WA_CLICKACTIVE, 0);
-    
-    // 方法3：确保窗口在最前面
-    SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, 
-                 SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
-}
-
-
 void RestoreFocus(HWND hwnd) {
-    HWND hwnd = WindowFromPoint(pt);
     // 确保窗口可见
     ShowWindow(hwnd, SW_SHOW);
     
@@ -69,30 +48,32 @@ void RestoreFocus(HWND hwnd) {
     SetFocus(hwnd);
 }
 
-/* void RestoreFocus(POINT pt) {
-  std::thread([pt]() {
-    // 等待命令执行
-    Sleep(50);
 
-    // 通过鼠标位置找到窗口并聚焦
-    HWND window_at_point = WindowFromPoint(pt);
-    if (window_at_point) {
-      // 发送点击事件给窗口
-      SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
-      SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
-    }
-  }).detach();
-}
- */
+// // 恢复窗口焦点
+// void RestoreFocus(POINT pt) {
+//   std::thread([pt]() {
+//     // 等待命令执行
+//     Sleep(50);
 
-// 执行命令并确保窗口保持焦点
-void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd, POINT pt) {
-  // 执行命令
-  ExecuteCommand(command, hwnd);
+//     // 通过鼠标位置找到窗口并聚焦
+//     HWND window_at_point = WindowFromPoint(pt);
+//     if (window_at_point) {
+//       // 发送点击事件给窗口
+//       SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
+//       SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
+//     }
+//   }).detach();
+// }
+
+
+// // 执行命令并确保窗口保持焦点
+// void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd, POINT pt) {
+//   // 执行命令
+//   ExecuteCommand(command, hwnd);
   
-  // 恢复焦点
-  RestoreFocus(pt);
-}
+//   // 恢复焦点
+//   RestoreFocus(pt);
+// }
 
 
 
@@ -355,16 +336,12 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_new_tab_button) {
     // 配合 粘贴并搜索 扩展
     SendKey(VK_CONTROL, VK_SHIFT, 'V');
-
-
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
-
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     Sleep(50);
-    RestoreFocus(hwnd);
-
+    RestoreFocus(hwnd); 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
     紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
@@ -383,6 +360,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_extensions_button) {
     ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
+    SendMessage(hwnd, WM_MBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
@@ -439,7 +417,6 @@ int HandleRightClickOnTestButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_test_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    //RestoreFocus(pt);
     return 1;
   }
 
@@ -465,11 +442,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_bookmark_history = IsOnBookmarkHistory(top_container_view, pt);
 
   if (is_on_bookmark_history) {
-    //ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
-
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    RestoreFocus(pt);
-    
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);  
     return 1;
   }
 

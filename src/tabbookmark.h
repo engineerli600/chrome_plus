@@ -33,19 +33,26 @@ bool IsPressed(int key) {
   return key && (::GetKeyState(key) & KEY_PRESSED) != 0;
 }
 
-
-void RestoreFocus(HWND hwnd) {
-    // 确保窗口可见
-    ShowWindow(hwnd, SW_SHOW);
+// 方法2：更强制的焦点恢复（如果方法1不够强力）
+void ForceFocus(HWND hwnd) {
+    // 获取当前前台窗口的线程ID
+    DWORD foregroundThreadId = GetWindowThreadProcessId(GetForegroundWindow(), NULL);
+    DWORD currentThreadId = GetCurrentThreadId();
     
-    // 将窗口置于前台
+    // 如果不是同一个线程，先附加输入处理
+    if (foregroundThreadId != currentThreadId) {
+        AttachThreadInput(currentThreadId, foregroundThreadId, TRUE);
+    }
+    
+    // 强制设置前台窗口
     SetForegroundWindow(hwnd);
-    
-    // 激活窗口
     SetActiveWindow(hwnd);
-    
-    // 设置焦点
     SetFocus(hwnd);
+    
+    // 分离线程输入处理
+    if (foregroundThreadId != currentThreadId) {
+        AttachThreadInput(currentThreadId, foregroundThreadId, FALSE);
+    }
 }
 
 
@@ -341,7 +348,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     Sleep(50);
-    RestoreFocus(hwnd); 
+    ForceFocus(hwnd); 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
     紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。

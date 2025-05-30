@@ -34,17 +34,15 @@ bool IsPressed(int key) {
 }
 
 
-// 方法2：使用 PostMessage（异步）
-void PostVirtualClick(POINT pt) {
+// 方法3：发送窗口激活消息（推荐用于焦点问题）
+void SendActivationClick(POINT pt) {
     HWND hwnd = WindowFromPoint(pt);
     if (hwnd) {
-        // 转换为客户端坐标
-        ScreenToClient(hwnd, &pt);
+        // 发送窗口激活消息
+        SendMessage(hwnd, WM_ACTIVATE, WA_CLICKACTIVE, 0);
         
-        LPARAM lParam = MAKELPARAM(pt.x, pt.y);
-        
-        PostMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, lParam);
-        PostMessage(hwnd, WM_LBUTTONUP, 0, lParam);
+        // 或者发送鼠标激活消息
+        SendMessage(hwnd, WM_MOUSEACTIVATE, (WPARAM)hwnd, MAKELPARAM(HTCLIENT, WM_LBUTTONDOWN));
     }
 }
 
@@ -387,7 +385,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    PostVirtualClick(pt);
+    SendActivationClick(pt);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

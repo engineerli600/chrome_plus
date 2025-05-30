@@ -35,7 +35,15 @@ bool IsPressed(int key) {
 
 
 
-
+void SendVirtualClick(HWND hwnd, int x, int y) {
+    LPARAM lParam = MAKELPARAM(x, y);
+    
+    // 发送鼠标按下消息
+    SendMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, lParam);
+    
+    // 发送鼠标抬起消息
+    SendMessage(hwnd, WM_LBUTTONUP, 0, lParam);
+}
 
 
 // // 恢复窗口焦点
@@ -329,7 +337,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    Sleep(50);
+    SendVirtualClick(hwnd);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
@@ -431,7 +439,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_bookmark_history = IsOnBookmarkHistory(top_container_view, pt);
 
   if (is_on_bookmark_history) {
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);  
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     return 1;
   }
 

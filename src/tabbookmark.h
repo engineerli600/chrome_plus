@@ -34,16 +34,31 @@ bool IsPressed(int key) {
 }
 
 
-// 方法3：发送窗口激活消息（推荐用于焦点问题）
-void SendActivationClick(POINT pt) {
-    HWND hwnd = WindowFromPoint(pt);
-    if (hwnd) {
-        // 发送窗口激活消息
-        SendMessage(hwnd, WM_ACTIVATE, WA_CLICKACTIVE, 0);
-        
-        // 或者发送鼠标激活消息
-        //SendMessage(hwnd, WM_MOUSEACTIVATE, (WPARAM)hwnd, MAKELPARAM(HTCLIENT, WM_LBUTTONDOWN));
-    }
+// 方法4：使用 SendInput（更底层的方法）
+void SendInputClick(POINT pt) {
+    INPUT input[2] = {};
+    
+    // SendInput 使用屏幕坐标，需要转换为绝对坐标
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    
+    // 转换为绝对坐标 (0-65535 范围)
+    int absoluteX = (pt.x * 65535) / screenWidth;
+    int absoluteY = (pt.y * 65535) / screenHeight;
+    
+    // 鼠标按下
+    input[0].type = INPUT_MOUSE;
+    input[0].mi.dx = absoluteX;
+    input[0].mi.dy = absoluteY;
+    input[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_ABSOLUTE;
+    
+    // 鼠标抬起
+    input[1].type = INPUT_MOUSE;
+    input[1].mi.dx = absoluteX;
+    input[1].mi.dy = absoluteY;
+    input[1].mi.dwFlags = MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE;
+    
+    SendInput(2, input, sizeof(INPUT));
 }
 
 
@@ -385,7 +400,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    SendActivationClick(pt);
+    SendInputClick(pt);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

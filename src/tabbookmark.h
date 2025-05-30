@@ -43,7 +43,7 @@ void RestoreFocus(POINT pt, int offsetX = 0, int offsetY = 0) {
     HWND window_at_point = WindowFromPoint(pt);
     if (window_at_point) {
       // 转换为客户端坐标
-      ScreenToClient(window_at_point, &pt);
+      //ScreenToClient(window_at_point, &pt);
       
       // 计算虚拟移动后的位置
       POINT newPt = {pt.x + offsetX, pt.y + offsetY};

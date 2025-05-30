@@ -45,6 +45,50 @@ void SendVirtualClick(HWND hwnd, int x, int y) {
     SendMessage(hwnd, WM_LBUTTONUP, 0, lParam);
 }
 
+// 使用SendMessage发送左键点击事件恢复焦点
+void RestoreFocus(POINT pt) {
+    HWND hwnd = WindowFromPoint(pt);
+    if (hwnd) {
+        // 转换为客户端坐标
+        ScreenToClient(hwnd, &pt);
+        
+        // 发送左键按下事件
+        SendMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
+        
+        // 发送左键松开事件
+        SendMessage(hwnd, WM_LBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
+    }
+}
+
+// 使用SendMessage发送中键点击事件恢复焦点
+void RestoreFocusMiddleClick(POINT pt) {
+    HWND hwnd = WindowFromPoint(pt);
+    if (hwnd) {
+        // 转换为客户端坐标
+        ScreenToClient(hwnd, &pt);
+        
+        // 发送中键按下事件
+        SendMessage(hwnd, WM_MBUTTONDOWN, MK_MBUTTON, MAKELPARAM(pt.x, pt.y));
+        
+        // 发送中键松开事件
+        SendMessage(hwnd, WM_MBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
+    }
+}
+
+// 使用SendMessage发送右键点击事件恢复焦点
+void RestoreFocusRightClick(POINT pt) {
+    HWND hwnd = WindowFromPoint(pt);
+    if (hwnd) {
+        // 转换为客户端坐标
+        ScreenToClient(hwnd, &pt);
+        
+        // 发送右键按下事件
+        SendMessage(hwnd, WM_RBUTTONDOWN, MK_RBUTTON, MAKELPARAM(pt.x, pt.y));
+        
+        // 发送右键松开事件
+        SendMessage(hwnd, WM_RBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
+    }
+}
 
 // // 恢复窗口焦点
 // void RestoreFocus(POINT pt) {
@@ -337,7 +381,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    SendVirtualClick(hwnd);
+    RestoreFocus(pt);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

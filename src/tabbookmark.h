@@ -343,6 +343,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_new_tab_button) {
     // 配合 粘贴并搜索 扩展
     SendKey(VK_CONTROL, VK_SHIFT, 'V');
+    VirtualMouseMoveAndClick(pt, 50, 0);
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
@@ -424,7 +425,6 @@ int HandleRightClickOnTestButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_test_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    //RestoreFocus(pt);
     return 1;
   }
 

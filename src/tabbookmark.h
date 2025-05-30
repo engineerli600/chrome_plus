@@ -348,7 +348,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     VirtualMouseMoveAndClick(pt, 50, 0);
-    
+
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
     紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
@@ -453,7 +453,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
 
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    RestoreFocus(pt);
+
     
     return 1;
   }

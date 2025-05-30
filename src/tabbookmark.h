@@ -42,7 +42,7 @@ void SendActivationClick(POINT pt) {
         SendMessage(hwnd, WM_ACTIVATE, WA_CLICKACTIVE, 0);
         
         // 或者发送鼠标激活消息
-        SendMessage(hwnd, WM_MOUSEACTIVATE, (WPARAM)hwnd, MAKELPARAM(HTCLIENT, WM_LBUTTONDOWN));
+        //SendMessage(hwnd, WM_MOUSEACTIVATE, (WPARAM)hwnd, MAKELPARAM(HTCLIENT, WM_LBUTTONDOWN));
     }
 }
 

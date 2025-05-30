@@ -34,56 +34,32 @@ bool IsPressed(int key) {
 }
 
 
-// 使用SendMessage发送虚拟鼠标移动和点击（推荐）
-void VirtualMouseMoveAndClick(POINT pt, int offsetX = 50, int offsetY = 0) {
-    HWND hwnd = WindowFromPoint(pt);
-    if (hwnd) {
-        // 转换为客户端坐标
-        ScreenToClient(hwnd, &pt);
-        
-        // 计算虚拟移动后的位置
-        POINT newPt = {pt.x + offsetX, pt.y + offsetY};
-        
-        // 发送鼠标移动消息（虚拟移动，不移动真实鼠标）
-        SendMessage(hwnd, WM_MOUSEMOVE, 0, MAKELPARAM(newPt.x, newPt.y));
-        
-        // 发送鼠标悬停消息
-        SendMessage(hwnd, WM_MOUSEHOVER, 0, MAKELPARAM(newPt.x, newPt.y));
-        
-        // 发送虚拟点击事件
-        SendMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(newPt.x, newPt.y));
-        SendMessage(hwnd, WM_LBUTTONUP, 0, MAKELPARAM(newPt.x, newPt.y));
+void RestoreFocus(POINT pt, int offsetX = 0, int offsetY = 0) {
+  std::thread([pt, offsetX, offsetY]() {
+    // 等待命令执行
+    Sleep(50);
+
+    // 通过鼠标位置找到窗口并聚焦
+    HWND window_at_point = WindowFromPoint(pt);
+    if (window_at_point) {
+      // 转换为客户端坐标
+      ScreenToClient(window_at_point, &pt);
+      
+      // 计算虚拟移动后的位置
+      POINT newPt = {pt.x + offsetX, pt.y + offsetY};
+      
+      // 发送鼠标移动消息（虚拟移动，不移动真实鼠标）
+      SendMessage(window_at_point, WM_MOUSEMOVE, 0, MAKELPARAM(newPt.x, newPt.y));
+      
+      // 发送鼠标悬停消息
+      SendMessage(window_at_point, WM_MOUSEHOVER, 0, MAKELPARAM(newPt.x, newPt.y));
+      
+      // 发送虚拟点击事件
+      SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(newPt.x, newPt.y));
+      SendMessage(window_at_point, WM_LBUTTONUP, 0, MAKELPARAM(newPt.x, newPt.y));
     }
+  }).detach();
 }
-
-
-// // 恢复窗口焦点
-// void RestoreFocus(POINT pt) {
-//   std::thread([pt]() {
-//     // 等待命令执行
-//     Sleep(50);
-
-//     // 通过鼠标位置找到窗口并聚焦
-//     HWND window_at_point = WindowFromPoint(pt);
-//     if (window_at_point) {
-//       // 发送点击事件给窗口
-//       SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
-//       SendMessage(window_at_point, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
-//     }
-//   }).detach();
-// }
-
-// // 执行命令并确保窗口保持焦点
-// void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd, POINT pt) {
-//   // 执行命令
-//   ExecuteCommand(command, hwnd);
-  
-//   // 恢复焦点
-//   RestoreFocus(pt);
-// }
-
-
-
 
 
 // Compared with `IsOnlyOneTab`, this function additionally implements tick
@@ -343,12 +319,12 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (is_on_new_tab_button) {
     // 配合 粘贴并搜索 扩展
     SendKey(VK_CONTROL, VK_SHIFT, 'V');
-    VirtualMouseMoveAndClick(pt, 50, 0);
+    RestoreFocus(pt, 50, 0);
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    VirtualMouseMoveAndClick(pt, 50, 0);
+    RestoreFocus(pt, 50, 0);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

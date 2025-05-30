@@ -34,80 +34,28 @@ bool IsPressed(int key) {
 }
 
 
-// 方法4：使用 SendInput（更底层的方法）
-void SendInputClick(POINT pt) {
-    INPUT input[2] = {};
-    
-    // SendInput 使用屏幕坐标，需要转换为绝对坐标
-    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-    
-    // 转换为绝对坐标 (0-65535 范围)
-    int absoluteX = (pt.x * 65535) / screenWidth;
-    int absoluteY = (pt.y * 65535) / screenHeight;
-    
-    // 鼠标按下
-    input[0].type = INPUT_MOUSE;
-    input[0].mi.dx = absoluteX;
-    input[0].mi.dy = absoluteY;
-    input[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_ABSOLUTE;
-    
-    // 鼠标抬起
-    input[1].type = INPUT_MOUSE;
-    input[1].mi.dx = absoluteX;
-    input[1].mi.dy = absoluteY;
-    input[1].mi.dwFlags = MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE;
-    
-    SendInput(2, input, sizeof(INPUT));
-}
-
-
-
-
-// 使用SendMessage发送左键点击事件恢复焦点
-void RestoreFocus(POINT pt) {
+// 使用SendMessage发送虚拟鼠标移动和点击（推荐）
+void VirtualMouseMoveAndClick(POINT pt, int offsetX = 50, int offsetY = 0) {
     HWND hwnd = WindowFromPoint(pt);
     if (hwnd) {
         // 转换为客户端坐标
         ScreenToClient(hwnd, &pt);
         
-        // 发送左键按下事件
-        SendMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
+        // 计算虚拟移动后的位置
+        POINT newPt = {pt.x + offsetX, pt.y + offsetY};
         
-        // 发送左键松开事件
-        SendMessage(hwnd, WM_LBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
+        // 发送鼠标移动消息（虚拟移动，不移动真实鼠标）
+        SendMessage(hwnd, WM_MOUSEMOVE, 0, MAKELPARAM(newPt.x, newPt.y));
+        
+        // 发送鼠标悬停消息
+        SendMessage(hwnd, WM_MOUSEHOVER, 0, MAKELPARAM(newPt.x, newPt.y));
+        
+        // 发送虚拟点击事件
+        SendMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(newPt.x, newPt.y));
+        SendMessage(hwnd, WM_LBUTTONUP, 0, MAKELPARAM(newPt.x, newPt.y));
     }
 }
 
-// 使用SendMessage发送中键点击事件恢复焦点
-void RestoreFocusMiddleClick(POINT pt) {
-    HWND hwnd = WindowFromPoint(pt);
-    if (hwnd) {
-        // 转换为客户端坐标
-        ScreenToClient(hwnd, &pt);
-        
-        // 发送中键按下事件
-        SendMessage(hwnd, WM_MBUTTONDOWN, MK_MBUTTON, MAKELPARAM(pt.x, pt.y));
-        
-        // 发送中键松开事件
-        SendMessage(hwnd, WM_MBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
-    }
-}
-
-// 使用SendMessage发送右键点击事件恢复焦点
-void RestoreFocusRightClick(POINT pt) {
-    HWND hwnd = WindowFromPoint(pt);
-    if (hwnd) {
-        // 转换为客户端坐标
-        ScreenToClient(hwnd, &pt);
-        
-        // 发送右键按下事件
-        SendMessage(hwnd, WM_RBUTTONDOWN, MK_RBUTTON, MAKELPARAM(pt.x, pt.y));
-        
-        // 发送右键松开事件
-        SendMessage(hwnd, WM_RBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
-    }
-}
 
 // // 恢复窗口焦点
 // void RestoreFocus(POINT pt) {
@@ -124,7 +72,6 @@ void RestoreFocusRightClick(POINT pt) {
 //     }
 //   }).detach();
 // }
-
 
 // // 执行命令并确保窗口保持焦点
 // void ExecuteCommandAndKeepFocus(DWORD command, HWND hwnd, POINT pt) {
@@ -400,8 +347,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    SendInputClick(pt);
-
+    VirtualMouseMoveAndClick(pt, 50, 0);
+    
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
     紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
@@ -477,6 +424,7 @@ int HandleRightClickOnTestButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   if (is_on_test_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    //RestoreFocus(pt);
     return 1;
   }
 
@@ -502,7 +450,11 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   bool is_on_bookmark_history = IsOnBookmarkHistory(top_container_view, pt);
 
   if (is_on_bookmark_history) {
+    //ExecuteCommand(IDC_TAKE_SCREENSHOT, hwnd);
+
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    RestoreFocus(pt);
+    
     return 1;
   }
 

@@ -42,9 +42,8 @@ enum MouseButton {
 };
 
 void RestoreFocus(POINT pt, int offsetX = 0, int offsetY = 0, MouseButton button = LBUTTON) {
-  std::thread([pt, offsetX, offsetY, button]() {
     // 等待命令执行
-    Sleep(50);
+    // Sleep(50);
 
     // 通过鼠标位置找到窗口并聚焦
     HWND window_at_point = WindowFromPoint(pt);
@@ -80,29 +79,8 @@ void RestoreFocus(POINT pt, int offsetX = 0, int offsetY = 0, MouseButton button
           break;
       }
     }
-  }).detach();
+
 }
-
-
-// 虚拟发送 Windows 徽标键函数
-void SendVirtualWindowsKey(HWND hwnd = nullptr) {
-    // 如果没有指定窗口句柄，获取当前前台窗口
-    if (hwnd == nullptr) {
-        hwnd = GetForegroundWindow();
-    }
-    
-    if (hwnd) {
-        // 发送 Windows 徽标键按下消息
-        SendMessage(hwnd, WM_KEYDOWN, VK_LWIN, 0);
-        
-        // 短暂延迟模拟按键持续时间
-        Sleep(10);
-        
-        // 发送 Windows 徽标键松开消息
-        SendMessage(hwnd, WM_KEYUP, VK_LWIN, 0);
-    }
-}
-
 
 
 // Compared with `IsOnlyOneTab`, this function additionally implements tick
@@ -367,8 +345,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    SendVirtualWindowsKey();
-    //RestoreFocus(pt, 50, 0, MBUTTON);
+    RestoreFocus(pt, 50, 0, MBUTTON);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

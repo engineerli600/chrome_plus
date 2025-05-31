@@ -348,6 +348,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
     RestoreFocus(pt, 0, 0, MBUTTON);
 
+
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
     紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
@@ -358,19 +359,22 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_bookmark_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_extensions_button) {
     ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
-    SendMessage(hwnd, WM_MBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
+    RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
+    RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   }

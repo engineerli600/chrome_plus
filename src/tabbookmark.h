@@ -34,77 +34,52 @@ bool IsPressed(int key) {
 }
 
 
+// 定义鼠标按键类型枚举
+enum MouseButton {
+    LBUTTON = 0,  // 左键（默认）
+    MBUTTON = 1,  // 中键
+    RBUTTON = 2   // 右键
+};
 
+void RestoreFocus(POINT pt, int offsetX = 0, int offsetY = 0, MouseButton button = LBUTTON) {
+    // 等待命令执行
+    Sleep(50);
 
-// 虚拟发送 Windows 徽标键函数
-void SendVirtualWindowsKey(HWND hwnd = nullptr) {
-    // 如果没有指定窗口句柄，获取当前前台窗口
-    if (hwnd == nullptr) {
-        hwnd = GetForegroundWindow();
+    // 通过鼠标位置找到窗口并聚焦
+    HWND window_at_point = WindowFromPoint(pt);
+    if (window_at_point) {
+      
+      // 计算虚拟移动后的位置
+      POINT newPt = {pt.x + offsetX, pt.y + offsetY};
+      
+      // 发送鼠标移动消息（虚拟移动，不移动真实鼠标）
+      SendMessage(window_at_point, WM_MOUSEMOVE, 0, MAKELPARAM(newPt.x, newPt.y));
+      
+      // 发送鼠标悬停消息
+      SendMessage(window_at_point, WM_MOUSEHOVER, 0, MAKELPARAM(newPt.x, newPt.y));
+      
+      // 根据按键类型发送相应的点击事件
+      switch (button) {
+        case LBUTTON:
+          // 发送左键点击事件
+          SendMessage(window_at_point, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(newPt.x, newPt.y));
+          SendMessage(window_at_point, WM_LBUTTONUP, 0, MAKELPARAM(newPt.x, newPt.y));
+          break;
+          
+        case MBUTTON:
+          // 发送中键点击事件
+          SendMessage(window_at_point, WM_MBUTTONDOWN, MK_MBUTTON, MAKELPARAM(newPt.x, newPt.y));
+          SendMessage(window_at_point, WM_MBUTTONUP, 0, MAKELPARAM(newPt.x, newPt.y));
+          break;
+          
+        case RBUTTON:
+          // 发送右键点击事件
+          SendMessage(window_at_point, WM_RBUTTONDOWN, MK_RBUTTON, MAKELPARAM(newPt.x, newPt.y));
+          SendMessage(window_at_point, WM_RBUTTONUP, 0, MAKELPARAM(newPt.x, newPt.y));
+          break;
+      }
     }
-    
-    if (hwnd) {
-        // 发送 Windows 徽标键按下消息
-        SendMessage(hwnd, WM_KEYDOWN, VK_LWIN, 0);
-        
-        // 短暂延迟模拟按键持续时间
-        Sleep(10);
-        
-        // 发送 Windows 徽标键松开消息
-        SendMessage(hwnd, WM_KEYUP, VK_LWIN, 0);
-    }
-}
 
-// 虚拟发送 Windows 徽标键 + 其他键的组合键函数
-void SendVirtualWindowsKeyCombo(WORD additionalKey, HWND hwnd = nullptr) {
-    // 如果没有指定窗口句柄，获取当前前台窗口
-    if (hwnd == nullptr) {
-        hwnd = GetForegroundWindow();
-    }
-    
-    if (hwnd) {
-        // 发送 Windows 徽标键按下消息
-        SendMessage(hwnd, WM_KEYDOWN, VK_LWIN, 0);
-        
-        // 发送附加键按下消息
-        SendMessage(hwnd, WM_KEYDOWN, additionalKey, 0);
-        
-        // 短暂延迟
-        Sleep(10);
-        
-        // 按相反顺序松开按键
-        SendMessage(hwnd, WM_KEYUP, additionalKey, 0);
-        SendMessage(hwnd, WM_KEYUP, VK_LWIN, 0);
-    }
-}
-
-// 发送虚拟系统命令的函数（更高级的方法）
-void SendVirtualSystemCommand(UINT command, HWND hwnd = nullptr) {
-    // 如果没有指定窗口句柄，获取当前前台窗口
-    if (hwnd == nullptr) {
-        hwnd = GetForegroundWindow();
-    }
-    
-    if (hwnd) {
-        // 发送系统命令消息
-        SendMessage(hwnd, WM_SYSCOMMAND, command, 0);
-    }
-}
-
-// 使用 PostMessage 的异步版本
-void PostVirtualWindowsKey(HWND hwnd = nullptr) {
-    // 如果没有指定窗口句柄，获取当前前台窗口
-    if (hwnd == nullptr) {
-        hwnd = GetForegroundWindow();
-    }
-    
-    if (hwnd) {
-        // 异步发送 Windows 徽标键按下消息
-        PostMessage(hwnd, WM_KEYDOWN, VK_LWIN, 0);
-        
-        // 异步发送 Windows 徽标键松开消息
-        PostMessage(hwnd, WM_KEYUP, VK_LWIN, 0);
-    }
 }
 
 
@@ -366,13 +341,13 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 配合 粘贴并搜索 扩展
     //SendKey(VK_CONTROL, VK_SHIFT, 'V');
     SendKey(VK_MBUTTON);
-
+    RestoreFocus(pt, 50, 0);
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    SendVirtualWindowsKeyCombo(VK_TAB);
-    //RestoreFocus(pt, 0, 0, MBUTTON);
+    RestoreFocus(pt, 0, 0, MBUTTON);
+
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
@@ -384,22 +359,22 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_bookmark_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
-
+    RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
-
+    RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_extensions_button) {
     ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
-
+    RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
-
+    RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   }

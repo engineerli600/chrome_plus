@@ -341,14 +341,14 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 配合 粘贴并搜索 扩展
     SendKey(VK_CONTROL, VK_SHIFT, 'V');
     //SendKey(VK_MBUTTON);
-    
+
     // 向右移动50px后左键点击（默认）
-    RestoreFocus(pt, 50, 0, LBUTTON);
+    //RestoreFocus(pt, 50, 0, LBUTTON);
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
     ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    RestoreFocus(pt, 0, 0, MBUTTON);
+    //RestoreFocus(pt, 0, 0, MBUTTON);
 
 
     /*     
@@ -361,22 +361,22 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_bookmark_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
-    RestoreFocus(pt, 0, 0, MBUTTON);
+    //RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_view_site_info_button) {
     ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
-    RestoreFocus(pt, 0, 0, MBUTTON);
+    //RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_extensions_button) {
     ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
-    RestoreFocus(pt, 0, 0, MBUTTON);
+    //RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
-    RestoreFocus(pt, 0, 0, MBUTTON);
+    //RestoreFocus(pt, 0, 0, MBUTTON);
     //SendKey(VK_MBUTTON);
     return 1;
   }

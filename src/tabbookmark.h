@@ -17,12 +17,16 @@
 // 重新打开先前关闭的标签页
 #define IDC_RESTORE_TAB 34028
 
+#define IDC_RECENT_TABS_MENU 40239
 #define IDC_RELOAD_CLEARING_CACHE 33009
 #define IDC_COPY_URL 34060
 #define IDC_FOCUS_THIS_TAB 35017
 #define IDC_ALL_WINDOWS_FRONT 34048
 #define IDC_SHARING_HUB_SCREENSHOT 35031
 #define IDC_BOOKMARKS_MENU 40029
+
+#define IDC_FOCUS_LOCATION 39001
+#define IDC_PASTE_AND_GO 40256
 
 
 
@@ -338,12 +342,14 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
+    ExecuteCommand(IDC_FOCUS_LOCATION, hwnd);
+    ExecuteCommand(IDC_PASTE_AND_GO, hwnd);
     // 配合 粘贴并搜索 扩展
-    SendKey(VK_CONTROL, VK_SHIFT, 'V');
+    //SendKey(VK_CONTROL, VK_SHIFT, 'V');
     //SendKey(VK_MBUTTON);
     
     // 向右移动50px后左键点击（默认）
-    RestoreFocus(pt, 50, 0, LBUTTON);
+    //RestoreFocus(pt, 50, 0, LBUTTON);
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {

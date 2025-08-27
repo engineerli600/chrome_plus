@@ -349,8 +349,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
-    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
-    RestoreFocus(pt, 0, 0, MBUTTON);
+    //ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    //RestoreFocus(pt, 0, 0, MBUTTON);
 
 
     /*     
@@ -358,7 +358,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
     也欢迎大家提出其他解决方法。
     */
-    //SendKey(VK_MBUTTON);
+    ExecuteCommand(IDC_CLOSE_TAB, hwnd);
+    SendKey(VK_MBUTTON);
 
     return 1;
   } else if (is_on_bookmark_button) {

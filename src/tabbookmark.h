@@ -372,7 +372,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
     // 测试是否还是会无反应，把下面这一行注释/开启注释
-    // RestoreFocus(pt, 0, 0, MBUTTON);
+    RestoreFocus(pt, 0, 0, MBUTTON);
 
     /*     
     打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

@@ -340,6 +340,11 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
+    // 检查配置是否启用
+    if (config.is_open_clipboard_url == "disabled") {
+      return 0;
+    }    
+    
     // 从剪贴板获取 URL 或搜索关键词
     std::wstring url = GetUrlFromClipboard();
     if (!url.empty()) {
@@ -373,8 +378,8 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       SendKey(VK_CONTROL, 'V');
       //Sleep(50);
       SendKey(VK_RETURN);
-      Sleep(1000);
-      RestoreFocus(pt, 50, 0, LBUTTON);
+      //Sleep(1000);
+      RestoreFocus(pt, 0, 100, MBUTTON);
     }
 
     // 配合 粘贴并搜索 扩展

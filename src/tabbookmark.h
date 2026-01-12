@@ -373,6 +373,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       SendKey(VK_CONTROL, 'V');
       //Sleep(50);
       SendKey(VK_RETURN);
+      Sleep(50);
       RestoreFocus(pt, 50, 0, LBUTTON);
     }
 

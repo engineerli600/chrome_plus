@@ -340,12 +340,19 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
+    // 从剪贴板获取 URL 或搜索关键词
+    std::wstring url = GetUrlFromClipboard();
+    if (!url.empty()) {
+      // 使用 ShellExecute 在新标签页打开 URL
+      ShellExecuteW(nullptr, L"open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+    }
+    
     // 配合 粘贴并搜索 扩展
-    SendKey(VK_CONTROL, VK_SHIFT, 'V');
+    //SendKey(VK_CONTROL, VK_SHIFT, 'V');
     //SendKey(VK_MBUTTON);
     
     // 向右移动50px后左键点击（默认）
-    RestoreFocus(pt, 50, 0, LBUTTON);
+    //RestoreFocus(pt, 50, 0, LBUTTON);
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {

@@ -540,4 +540,89 @@ void SendOneMouse(int mouse) {
   ::SendInput(1, input, sizeof(INPUT));
 }
 
+
+// Clipboard and URL handling functions.
+// Read string from clipboard.
+std::wstring GetClipboardText() {
+  std::wstring text;
+  if (!OpenClipboard(nullptr)) {
+    return text;
+  }
+
+  HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+  if (hData != nullptr) {
+    wchar_t* pszText = static_cast<wchar_t*>(GlobalLock(hData));
+    if (pszText != nullptr) {
+      text = pszText;
+      GlobalUnlock(hData);
+    }
+  }
+  CloseClipboard();
+  return text;
+}
+
+// Check if the string is a valid URL.
+bool IsValidUrl(const std::wstring& str) {
+  if (str.empty()) {
+    return false;
+  }
+
+  // Convert to lowercase for comparison.
+  std::wstring lower_str = str;
+  std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(),
+                 ::towlower);
+
+  return lower_str.find(L"http://") == 0 ||
+         lower_str.find(L"https://") == 0 ||
+         lower_str.find(L"ftp://") == 0 ||
+         lower_str.find(L"chrome://") == 0;
+}
+
+// Open URL or search with Google from clipboard text.
+// Returns the URL to open.
+std::wstring GetUrlFromClipboard() {
+  std::wstring text = GetClipboardText();
+  
+  if (text.empty()) {
+    return L"";
+  }
+
+  // Trim whitespace.
+  text.erase(0, text.find_first_not_of(L" \t\n\r"));
+  text.erase(text.find_last_not_of(L" \t\n\r") + 1);
+
+  if (text.empty()) {
+    return L"";
+  }
+
+  if (IsValidUrl(text)) {
+    // It's a valid URL, return it directly.
+    return text;
+  } else {
+    // Not a URL, use Google search.
+    // URL encode the search text.
+    std::wstring encoded_text;
+    for (wchar_t c : text) {
+      if ((c >= L'A' && c <= L'Z') || (c >= L'a' && c <= L'z') ||
+          (c >= L'0' && c <= L'9') || c == L'-' || c == L'_' || c == L'.' ||
+          c == L'~') {
+        encoded_text += c;
+      } else if (c == L' ') {
+        encoded_text += L'+';
+      } else {
+        // Encode other characters.
+        char mb[8] = {0};
+        int len = WideCharToMultiByte(CP_UTF8, 0, &c, 1, mb, sizeof(mb),
+                                      nullptr, nullptr);
+        for (int i = 0; i < len; ++i) {
+          wchar_t hex[4];
+          swprintf_s(hex, L"%%%02X", (unsigned char)mb[i]);
+          encoded_text += hex;
+        }
+      }
+    }
+    return L"https://www.google.com/search?q=" + encoded_text;
+  }
+}
+
 #endif  // UTILS_H_

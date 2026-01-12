@@ -340,49 +340,12 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
-    // 从剪贴板获取 URL 或搜索关键词
-    std::wstring url = GetUrlFromClipboard();
-    if (!url.empty()) {
-      // 判断当前是否是新标签页
-      bool is_on_new_tab = IsOnNewTab(top_container_view);
-      
-      if (!is_on_new_tab) {
-        // 如果不是新标签页，先新建标签页
-        ExecuteCommand(IDC_NEW_TAB, hwnd);
-        // 等待新标签页打开
-        Sleep(100);
-      }
-      
-      // 将 URL 设置到剪贴板
-      if (OpenClipboard(nullptr)) {
-        EmptyClipboard();
-        size_t size = (url.length() + 1) * sizeof(wchar_t);
-        HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, size);
-        if (hGlobal) {
-          wchar_t* pszDest = static_cast<wchar_t*>(GlobalLock(hGlobal));
-          if (pszDest) {
-            wcscpy_s(pszDest, url.length() + 1, url.c_str());
-            GlobalUnlock(hGlobal);
-            SetClipboardData(CF_UNICODETEXT, hGlobal);
-          }
-        }
-        CloseClipboard();
-      }
-      
-      // 粘贴并访问：Ctrl+V 然后 Enter
-      SendKey(VK_CONTROL, 'V');
-      //Sleep(50);
-      SendKey(VK_RETURN);
-      //Sleep(1000);
-      //RestoreFocus(pt, 0, 0, RBUTTON);
-    }
-
     // 配合 粘贴并搜索 扩展
-    //SendKey(VK_CONTROL, VK_SHIFT, 'V');
+    SendKey(VK_CONTROL, VK_SHIFT, 'V');
     //SendKey(VK_MBUTTON);
     
     // 向右移动50px后左键点击（默认）
-    //RestoreFocus(pt, 50, 0, LBUTTON);
+    RestoreFocus(pt, 50, 0, LBUTTON);
     return 1;
     // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {

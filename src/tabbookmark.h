@@ -371,8 +371,9 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       
       // 粘贴并访问：Ctrl+V 然后 Enter
       SendKey(VK_CONTROL, 'V');
-      Sleep(50);
+      //Sleep(50);
       SendKey(VK_RETURN);
+      RestoreFocus(pt, 0, 0, LBUTTON);
     }
 
     // 配合 粘贴并搜索 扩展

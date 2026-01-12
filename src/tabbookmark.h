@@ -343,10 +343,38 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     // 从剪贴板获取 URL 或搜索关键词
     std::wstring url = GetUrlFromClipboard();
     if (!url.empty()) {
-      // 使用 ShellExecute 在新标签页打开 URL
-      ShellExecuteW(nullptr, L"open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+      // 判断当前是否是新标签页
+      bool is_on_new_tab = IsOnNewTab(top_container_view);
+      
+      if (!is_on_new_tab) {
+        // 如果不是新标签页，先新建标签页
+        ExecuteCommand(IDC_NEW_TAB, hwnd);
+        // 等待新标签页打开
+        Sleep(100);
+      }
+      
+      // 将 URL 设置到剪贴板
+      if (OpenClipboard(nullptr)) {
+        EmptyClipboard();
+        size_t size = (url.length() + 1) * sizeof(wchar_t);
+        HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, size);
+        if (hGlobal) {
+          wchar_t* pszDest = static_cast<wchar_t*>(GlobalLock(hGlobal));
+          if (pszDest) {
+            wcscpy_s(pszDest, url.length() + 1, url.c_str());
+            GlobalUnlock(hGlobal);
+            SetClipboardData(CF_UNICODETEXT, hGlobal);
+          }
+        }
+        CloseClipboard();
+      }
+      
+      // 粘贴并访问：Ctrl+V 然后 Enter
+      SendKey(VK_CONTROL, 'V');
+      Sleep(50);
+      SendKey(VK_RETURN);
     }
-    
+
     // 配合 粘贴并搜索 扩展
     //SendKey(VK_CONTROL, VK_SHIFT, 'V');
     //SendKey(VK_MBUTTON);

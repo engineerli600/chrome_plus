@@ -374,7 +374,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
       //Sleep(50);
       SendKey(VK_RETURN);
       //Sleep(1000);
-      RestoreFocus(pt, 0, 0, RBUTTON);
+      //RestoreFocus(pt, 0, 0, RBUTTON);
     }
 
     // 配合 粘贴并搜索 扩展

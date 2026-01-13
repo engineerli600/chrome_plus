@@ -142,35 +142,4 @@ std::wstring GetDisableTabName() {
   return GetIniString(L"tabs", L"new_tab_disable_name", L"");
 }
 
-
-// Get action config for buttons
-// Format: "command_id,key1,key2,key3"
-// command_id: Chrome command ID (0 or empty means no command)
-// key1,key2,key3: SendKey parameters (empty means no key)
-std::wstring GetActionOnNewTabButton() {
-  return GetIniString(L"buttons", L"action_on_new_tab_button", L"0,CONTROL,SHIFT,V");
-}
-
-std::wstring GetActionOnSearchTabButton() {
-  return GetIniString(L"buttons", L"action_on_search_tab_button", L"40010");
-}
-
-std::wstring GetActionOnBookmarkButton() {
-  return GetIniString(L"buttons", L"action_on_bookmark_button", L"35021");
-}
-
-std::wstring GetActionOnViewSiteInfoButton() {
-  return GetIniString(L"buttons", L"action_on_view_site_info_button", L"35021");
-}
-
-std::wstring GetActionOnExtensionsButton() {
-  return GetIniString(L"buttons", L"action_on_extensions_button", L"40022");
-}
-
-std::wstring GetActionOnChromiumButton() {
-  return GetIniString(L"buttons", L"action_on_chromium_button", L"40015");
-}
-
-
-
 #endif  // CONFIG_H_

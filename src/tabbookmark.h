@@ -43,13 +43,6 @@ enum MouseButton {
     RBUTTON = 2   // 右键
 };
 
-/*     
-打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
-紧接着发送左键或中键（SendKey(VK_MBUTTON);）或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
-也欢迎大家提出其他解决方法。
-*/  
-
-
 void RestoreFocus(POINT pt, int offsetX = 0, int offsetY = 0, MouseButton button = LBUTTON) {
     // 等待命令执行
     Sleep(50);
@@ -90,135 +83,6 @@ void RestoreFocus(POINT pt, int offsetX = 0, int offsetY = 0, MouseButton button
     }
 
 }
-
-
-// 将字符串转换为虚拟键码
-int StringToVirtualKey(const std::wstring& key_str) {
-  if (key_str.empty() || key_str == L"NONE" || key_str == L"0") {
-    return 0;
-  }
-
-  // 转换为大写进行比较
-  std::wstring upper_key = key_str;
-  std::transform(upper_key.begin(), upper_key.end(), upper_key.begin(), ::towupper);
-
-  // 修饰键
-  if (upper_key == L"CONTROL" || upper_key == L"CTRL") return VK_CONTROL;
-  if (upper_key == L"SHIFT") return VK_SHIFT;
-  if (upper_key == L"ALT" || upper_key == L"MENU") return VK_MENU;
-
-  // 功能键
-  if (upper_key == L"RETURN" || upper_key == L"ENTER") return VK_RETURN;
-  if (upper_key == L"ESCAPE" || upper_key == L"ESC") return VK_ESCAPE;
-  if (upper_key == L"TAB") return VK_TAB;
-  if (upper_key == L"SPACE") return VK_SPACE;
-  if (upper_key == L"BACK" || upper_key == L"BACKSPACE") return VK_BACK;
-  if (upper_key == L"DELETE" || upper_key == L"DEL") return VK_DELETE;
-
-  // F1-F12
-  if (upper_key.length() >= 2 && upper_key[0] == L'F') {
-    int num = 0;
-    if (upper_key.length() == 2) {
-      num = upper_key[1] - L'0';
-    } else if (upper_key.length() == 3) {
-      num = (upper_key[1] - L'0') * 10 + (upper_key[2] - L'0');
-    }
-    if (num >= 1 && num <= 12) return VK_F1 + num - 1;
-  }
-
-  // 鼠标按键
-  if (upper_key == L"LBUTTON") return VK_LBUTTON;
-  if (upper_key == L"MBUTTON") return VK_MBUTTON;
-  if (upper_key == L"RBUTTON") return VK_RBUTTON;
-
-  // 单个字母或数字 (A-Z, 0-9)
-  if (upper_key.length() == 1) {
-    wchar_t ch = upper_key[0];
-    if ((ch >= L'A' && ch <= L'Z') || (ch >= L'0' && ch <= L'9')) {
-      return static_cast<int>(ch);
-    }
-  }
-
-  return 0;
-}
-
-// 按钮动作配置结构体
-struct ButtonActionConfig {
-  int command_id = 0;
-  int key1 = 0;
-  int key2 = 0;
-  int key3 = 0;
-  bool is_valid = false;
-};
-
-// 解析按钮动作配置
-ButtonActionConfig ParseButtonAction(const std::wstring& config_str) {
-  ButtonActionConfig result;
-
-  if (config_str.empty() || config_str == L"disabled" || config_str == L"0") {
-    return result;
-  }
-
-  // 分割字符串
-  std::vector<std::wstring> params;
-  std::wstringstream ss(config_str);
-  std::wstring item;
-  while (std::getline(ss, item, L',')) {
-    // 去除前后空格
-    size_t start = item.find_first_not_of(L" \t");
-    size_t end = item.find_last_not_of(L" \t");
-    if (start != std::wstring::npos && end != std::wstring::npos) {
-      params.push_back(item.substr(start, end - start + 1));
-    } else {
-      params.push_back(L"");
-    }
-  }
-
-  if (params.empty()) {
-    return result;
-  }
-
-  // 解析参数
-  try {
-    result.command_id = params[0].empty() ? 0 : std::stoi(params[0]);
-    if (params.size() > 1) result.key1 = StringToVirtualKey(params[1]);
-    if (params.size() > 2) result.key2 = StringToVirtualKey(params[2]);
-    if (params.size() > 3) result.key3 = StringToVirtualKey(params[3]);
-    result.is_valid = (result.command_id > 0 || result.key1 != 0);
-  } catch (...) {
-    result.is_valid = false;
-  }
-
-  return result;
-}
-
-// 执行按钮动作（只执行 ExecuteCommand 和 SendKey）
-bool ExecuteButtonAction(const std::wstring& config_str, HWND hwnd) {
-  ButtonActionConfig action = ParseButtonAction(config_str);
-
-  if (!action.is_valid) {
-    return false;
-  }
-
-  // 执行 ExecuteCommand
-  if (action.command_id > 0) {
-    ExecuteCommand(action.command_id, hwnd);
-  }
-
-  // 执行 SendKey
-  if (action.key1 != 0) {
-    if (action.key2 != 0 && action.key3 != 0) {
-      SendKey(action.key1, action.key2, action.key3);
-    } else if (action.key2 != 0) {
-      SendKey(action.key1, action.key2);
-    } else {
-      SendKey(action.key1);
-    }
-  }
-
-  return true;
-}
-
 
 
 // Compared with `IsOnlyOneTab`, this function additionally implements tick
@@ -271,13 +135,7 @@ class IniConfig {
         is_wheel_tab(IsWheelTab()),
         is_wheel_tab_when_press_right_button(IsWheelTabWhenPressRightButton()),
         is_bookmark_new_tab(IsBookmarkNewTab()),
-        is_open_url_new_tab(IsOpenUrlNewTabFun()),
-        action_on_new_tab_button(GetActionOnNewTabButton()),
-        action_on_search_tab_button(GetActionOnSearchTabButton()),
-        action_on_bookmark_button(GetActionOnBookmarkButton()),
-        action_on_view_site_info_button(GetActionOnViewSiteInfoButton()),
-        action_on_extensions_button(GetActionOnExtensionsButton()),
-        action_on_chromium_button(GetActionOnChromiumButton()) {}
+        is_open_url_new_tab(IsOpenUrlNewTabFun()) {}
 
   bool is_double_click_close;
   bool is_right_click_close;
@@ -285,12 +143,6 @@ class IniConfig {
   bool is_wheel_tab_when_press_right_button;
   std::string is_bookmark_new_tab;
   std::string is_open_url_new_tab;
-  std::wstring action_on_new_tab_button;
-  std::wstring action_on_search_tab_button;
-  std::wstring action_on_bookmark_button;
-  std::wstring action_on_view_site_info_button;
-  std::wstring action_on_extensions_button;
-  std::wstring action_on_chromium_button;
 };
 
 IniConfig config;
@@ -488,36 +340,47 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
   // 判断是否点击在 新建标签 按钮上
   if (is_on_new_tab_button) {
-    if (ExecuteButtonAction(config.action_on_new_tab_button, hwnd)) {
-      // 向右移动50px后左键点击（默认）
-      RestoreFocus(pt, 50, 0, LBUTTON);
-      return 1;
-    }
+    // 配合 粘贴并搜索 扩展
+    SendKey(VK_CONTROL, VK_SHIFT, 'V');
+    //SendKey(VK_MBUTTON);
+    
+    // 向右移动50px后左键点击（默认）
+    RestoreFocus(pt, 50, 0, LBUTTON);
+    return 1;
+    // 判断是否点击在 搜索标签页 按钮上
   } else if (is_on_search_tab_button) {
-    if (ExecuteButtonAction(config.action_on_search_tab_button, hwnd)) {
-      RestoreFocus(pt, 0, 0, MBUTTON);
-      return 1;
-    }
+    ExecuteCommand(IDC_SHOW_HISTORY, hwnd);
+    RestoreFocus(pt, 0, 0, MBUTTON);
+    //SendKey(VK_MBUTTON);
+
+    return 1;
   } else if (is_on_bookmark_button) {
-    if (ExecuteButtonAction(config.action_on_bookmark_button, hwnd)) {
-      RestoreFocus(pt, 0, 0, MBUTTON);
-      return 1;
-    }
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    RestoreFocus(pt, 0, 0, MBUTTON);
+    //SendKey(VK_MBUTTON);
+    return 1;
   } else if (is_on_view_site_info_button) {
-    if (ExecuteButtonAction(config.action_on_view_site_info_button, hwnd)) {
-      RestoreFocus(pt, 0, 0, MBUTTON);
-      return 1;
-    }
+    ExecuteCommand(IDC_QRCODE_GENERATOR, hwnd);
+    RestoreFocus(pt, 0, 0, MBUTTON);
+    //SendKey(VK_MBUTTON);
+    return 1;
   } else if (is_on_extensions_button) {
-    if (ExecuteButtonAction(config.action_on_extensions_button, hwnd)) {
-      RestoreFocus(pt, 0, 0, MBUTTON);
-      return 1;
-    }
+    ExecuteCommand(IDC_MANAGE_EXTENSIONS, hwnd);
+    RestoreFocus(pt, 0, 0, MBUTTON);
+    //SendKey(VK_MBUTTON);
+    return 1;
   } else if (is_on_chromium_button) {
-    if (ExecuteButtonAction(config.action_on_chromium_button, hwnd)) {
-      RestoreFocus(pt, 0, 0, MBUTTON);
-      return 1;
-    }
+    ExecuteCommand(IDC_OPTIONS, hwnd);
+    // 测试是否还是会无反应，把下面这一行注释/开启注释
+    RestoreFocus(pt, 0, 0, MBUTTON);
+
+    /*     
+    打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
+    紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
+    也欢迎大家提出其他解决方法。
+    */  
+    //SendKey(VK_MBUTTON);
+    return 1;
   }
 
   return 0;

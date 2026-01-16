@@ -25,6 +25,28 @@
 #define IDC_SHARING_HUB_SCREENSHOT 35031
 #define IDC_BOOKMARKS_MENU 40029
 
+void ForceRefocusStrong(HWND hwnd) {
+    if (!hwnd) return;
+
+    DWORD currentThreadId = GetCurrentThreadId();
+    DWORD windowThreadId = GetWindowThreadProcessId(hwnd, nullptr);
+
+    if (currentThreadId != windowThreadId) {
+        // 附加输入上下文
+        AttachThreadInput(currentThreadId, windowThreadId, TRUE);
+        
+        // 尝试激活
+        SetForegroundWindow(hwnd);
+        SetFocus(hwnd);
+        SetActiveWindow(hwnd);
+        
+        // 解除附加
+        AttachThreadInput(currentThreadId, windowThreadId, FALSE);
+    } else {
+        SetFocus(hwnd);
+    }
+}
+
 
 void ExecuteCommandAndRefocus(int commandId, HWND hwnd) {
     ExecuteCommand(commandId, hwnd);
@@ -36,7 +58,7 @@ void ExecuteCommandAndRefocus(int commandId, HWND hwnd) {
     if (GetForegroundWindow() != hwnd) {
         SetForegroundWindow(hwnd);
     }
-    SetFocus(hwnd); 
+    ForceRefocusStrong(hwnd); 
 
     // 方法 B: 如果上面的不行，试试发送激活消息
     // SendMessage(hwnd, WM_ACTIVATE, WA_ACTIVE, 0);

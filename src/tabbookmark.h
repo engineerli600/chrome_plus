@@ -26,11 +26,11 @@
 #define IDC_BOOKMARKS_MENU 40029
 
 void SendActivateMessage(HWND hwnd) {
-
-    // 或者尝试 WA_CLICKACTIVE = 2
-    SendMessage(hwnd, WM_ACTIVATE, WA_CLICKACTIVE, 0);
+    if (hwnd) {
+        // WA_CLICKACTIVE = 2: Activated by a mouse click.
+        SendMessage(hwnd, WM_ACTIVATE, 2, 0);
+    }
 }
-
 
 
 

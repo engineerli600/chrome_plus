@@ -25,6 +25,39 @@
 #define IDC_SHARING_HUB_SCREENSHOT 35031
 #define IDC_BOOKMARKS_MENU 40029
 
+
+// 回调函数：用于查找 Chrome_RenderWidgetHostHWND 子窗口
+BOOL CALLBACK FindRenderWidgetCallback(HWND hwnd, LPARAM lParam) {
+    wchar_t className[100];
+    if (GetClassNameW(hwnd, className, 100)) {
+        // 找到 Chrome 的内容渲染窗口
+        if (wcscmp(className, L"Chrome_RenderWidgetHostHWND") == 0) {
+            HWND* pTarget = (HWND*)lParam;
+            *pTarget = hwnd;
+            return FALSE; // 找到后停止枚举
+        }
+    }
+    return TRUE; // 继续查找
+}
+
+// 强制聚焦到 Chrome 的内容区域
+void FocusContentArea(HWND top_window) {
+    if (!top_window) return;
+
+    HWND hRenderWidget = NULL;
+    // 枚举子窗口查找内容容器
+    EnumChildWindows(top_window, FindRenderWidgetCallback, (LPARAM)&hRenderWidget);
+
+    if (hRenderWidget) {
+        // 1. 如果找到了渲染窗口，聚焦它
+        SetFocus(hRenderWidget);
+    } else {
+        // 2. 如果没找到（某些特殊界面），回退到聚焦主窗口
+        SetFocus(top_window);
+    }
+}
+
+
 void SendActivateMessage(HWND hwnd) {
     if (hwnd) {
         // WA_CLICKACTIVE = 2: Activated by a mouse click.
@@ -377,7 +410,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
-    SendActivateMessage(hwnd);
+    FocusContentArea(hwnd);
 
     /*     
     执行 ExecuteCommand 后马上进行其他动作会无反应，具体现象：例如执行 ExecuteCommand 打开OPTIONS页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

@@ -393,7 +393,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
-    ForceRefocusStrong(hwnd)
+    ForceRefocusStrong(hwnd);
 
     /*     
     执行 ExecuteCommand 后马上进行其他动作会无反应，具体现象：例如执行 ExecuteCommand 打开OPTIONS页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

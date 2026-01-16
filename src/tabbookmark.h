@@ -27,42 +27,39 @@
 
 
 // 回调函数：用于查找 Chrome_RenderWidgetHostHWND 子窗口
-BOOL CALLBACK FindRenderWidgetCallback(HWND hwnd, LPARAM lParam) {
-    wchar_t className[100];
-    if (GetClassNameW(hwnd, className, 100)) {
-        // 找到 Chrome 的内容渲染窗口
-        if (wcscmp(className, L"Chrome_RenderWidgetHostHWND") == 0) {
-            HWND* pTarget = (HWND*)lParam;
-            *pTarget = hwnd;
-            return FALSE; // 找到后停止枚举
-        }
+BOOL CALLBACK FindRenderWidgetForActivateCallback(HWND hwnd, LPARAM lParam) {
+  wchar_t className[100];
+  if (GetClassNameW(hwnd, className, 100)) {
+    // 找到 Chrome 的内容渲染窗口
+    if (wcscmp(className, L"Chrome_RenderWidgetHostHWND") == 0) {
+      HWND* pTarget = (HWND*)lParam;
+      *pTarget = hwnd;
+      return FALSE; // 找到后停止枚举
     }
-    return TRUE; // 继续查找
+  }
+  return TRUE; // 继续查找
 }
 
-// 强制聚焦到 Chrome 的内容区域
-void FocusContentArea(HWND top_window) {
-    if (!top_window) return;
+// 结合方案3和方案4：找到内容区域并在该区域发送激活消息
+void ActivateContentArea(HWND top_window) {
+  if (!top_window) return;
 
-    HWND hRenderWidget = NULL;
-    // 枚举子窗口查找内容容器
-    EnumChildWindows(top_window, FindRenderWidgetCallback, (LPARAM)&hRenderWidget);
+  HWND hRenderWidget = NULL;
+  // 1. 查找内容子窗口
+  EnumChildWindows(top_window, FindRenderWidgetForActivateCallback, (LPARAM)&hRenderWidget);
 
-    if (hRenderWidget) {
-        // 1. 如果找到了渲染窗口，聚焦它
-        SetFocus(hRenderWidget);
-    } else {
-        // 2. 如果没找到（某些特殊界面），回退到聚焦主窗口
-        SetFocus(top_window);
-    }
-}
+  // 2. 确定目标窗口：优先使用内容子窗口，如果找不到则使用主窗口
+  HWND targetWnd = hRenderWidget ? hRenderWidget : top_window;
 
+  // 3. 强制设置焦点 (基础保障)
+  SetFocus(targetWnd);
 
-void SendActivateMessage(HWND hwnd) {
-    if (hwnd) {
-        // WA_CLICKACTIVE = 2: Activated by a mouse click.
-        SendMessage(hwnd, WM_ACTIVATE, 2, 0);
-    }
+  // 4. 发送模拟鼠标点击激活的消息 (核心 Trick)
+  // WA_CLICKACTIVE (2): Activated by a mouse click
+  SendMessage(targetWnd, WM_ACTIVATE, 2, 0);
+  
+  // 可选：再发送一个 WM_MOUSEACTIVATE 消息，更彻底地模拟鼠标行为
+  SendMessage(targetWnd, WM_MOUSEACTIVATE, (WPARAM)top_window, MAKELPARAM(HTCLIENT, WM_LBUTTONDOWN));
 }
 
 
@@ -410,7 +407,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
-    FocusContentArea(hwnd);
+    ActivateContentArea(hwnd);
 
     /*     
     执行 ExecuteCommand 后马上进行其他动作会无反应，具体现象：例如执行 ExecuteCommand 打开OPTIONS页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。

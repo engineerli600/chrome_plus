@@ -26,6 +26,22 @@
 #define IDC_BOOKMARKS_MENU 40029
 
 
+void ExecuteCommandAndRefocus(int commandId, HWND hwnd) {
+    ExecuteCommand(commandId, hwnd);
+    
+    // 稍微延迟，等待 Chrome 处理完那个命令
+    // Sleep(10); // 根据情况决定是否需要
+
+    // 方法 A: 标准激活
+    if (GetForegroundWindow() != hwnd) {
+        SetForegroundWindow(hwnd);
+    }
+    SetFocus(hwnd); 
+
+    // 方法 B: 如果上面的不行，试试发送激活消息
+    // SendMessage(hwnd, WM_ACTIVATE, WA_ACTIVE, 0);
+}
+
 
 
 HHOOK mouse_hook = nullptr;
@@ -370,15 +386,19 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     //SendKey(VK_MBUTTON);
     return 1;
   } else if (is_on_chromium_button) {
-    ExecuteCommand(IDC_OPTIONS, hwnd);
-    // 测试是否还是会无反应，把下面这一行注释/开启注释
-    RestoreFocus(pt, 0, 0, MBUTTON);
+    ExecuteCommandAndRefocus(IDC_OPTIONS, hwnd);
+    
+    //ExecuteCommand(IDC_OPTIONS, hwnd);
 
     /*     
-    打开页面后马上进行其他动作会无反应，具体现象：例如打开历史记录页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
-    紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
+    执行 ExecuteCommand 后马上进行其他动作会无反应，具体现象：例如执行 ExecuteCommand 打开OPTIONS页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
+    打开OPTIONS页面后，紧接着发送左键或中键或右键可以解决此问题，因为在原版chrome上，在该按钮上点击中键或右键是无动作的，所以可以用来解决此问题。
     也欢迎大家提出其他解决方法。
     */  
+    // 测试是否还是会无反应，把下面这一行注释/开启注释
+    //RestoreFocus(pt, 0, 0, MBUTTON);
+
+
     //SendKey(VK_MBUTTON);
     return 1;
   }
@@ -413,7 +433,7 @@ int HandleRightClickOnBookmarkHistory(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
 
  */
 
-// 处理右键点击新建标签按钮的事件
+// 处理右键点击测试按钮的事件
 int HandleRightClickOnTestButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
   if (wParam != WM_RBUTTONUP) {
     return 0;

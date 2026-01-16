@@ -25,26 +25,11 @@
 #define IDC_SHARING_HUB_SCREENSHOT 35031
 #define IDC_BOOKMARKS_MENU 40029
 
-void ForceRefocusStrong(HWND hwnd) {
-    if (!hwnd) return;
-
-    DWORD currentThreadId = GetCurrentThreadId();
-    DWORD windowThreadId = GetWindowThreadProcessId(hwnd, nullptr);
-
-    if (currentThreadId != windowThreadId) {
-        // 附加输入上下文
-        AttachThreadInput(currentThreadId, windowThreadId, TRUE);
-        
-        // 尝试激活
-        SetForegroundWindow(hwnd);
-        SetFocus(hwnd);
-        SetActiveWindow(hwnd);
-        
-        // 解除附加
-        AttachThreadInput(currentThreadId, windowThreadId, FALSE);
-    } else {
-        SetFocus(hwnd);
-    }
+void SendActivateMessage(HWND hwnd) {
+    // WA_ACTIVE = 1
+    SendMessage(hwnd, WM_ACTIVATE, WA_ACTIVE, 0);
+    // 或者尝试 WA_CLICKACTIVE = 2
+    // SendMessage(hwnd, WM_ACTIVATE, WA_CLICKACTIVE, 0);
 }
 
 
@@ -393,7 +378,7 @@ int HandleRightClickButton(WPARAM wParam, PMOUSEHOOKSTRUCT pmouse) {
     return 1;
   } else if (is_on_chromium_button) {
     ExecuteCommand(IDC_OPTIONS, hwnd);
-    ForceRefocusStrong(hwnd);
+    SendActivateMessage(hwnd);
 
     /*     
     执行 ExecuteCommand 后马上进行其他动作会无反应，具体现象：例如执行 ExecuteCommand 打开OPTIONS页面后，鼠标马上移动到左侧的标签页进行点击，这时发现不起作用，必须主动点击一次后，再进行第二次点击，才会切换到左侧的标签页。
